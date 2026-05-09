@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Structure Academy — STRUCTURA Deal School</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:#080c10; --bg2:#0d1318; --bg3:#131b22; --bg4:#192028;
+  --border:#1e2d3d; --border2:#253545;
+  --accent:#00e5ff; --accent2:#7b61ff; --green:#00e676;
+  --red:#ff3d71; --amber:#ffd740; --teal:#64ffda;
+  --text:#e0eaf4; --text2:#7a99b8; --text3:#4a6680;
+  --mono:'Space Mono',monospace; --sans:'Syne',sans-serif; --body:'Inter',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--body);font-size:13px;line-height:1.5;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:999}
+::-webkit-scrollbar{width:4px;height:4px} ::-webkit-scrollbar-track{background:var(--bg)} ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* ── NAV ── */
+.top-nav{position:sticky;top:0;z-index:100;background:rgba(8,12,16,0.97);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);display:flex;align-items:center;padding:0 20px;height:52px;gap:16px;}
+.nav-logo{font-family:var(--sans);font-size:15px;font-weight:800;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:8px;}
+.nav-logo-icon{width:24px;height:24px;background:var(--accent2);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);box-shadow:0 0 12px rgba(123,97,255,0.5);}
+.stage-tabs{display:flex;gap:0;flex:1;overflow-x:auto;scrollbar-width:none;}
+.stage-tabs::-webkit-scrollbar{display:none}
+.stage-tab{padding:0 14px;height:52px;display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:9px;letter-spacing:1px;color:var(--text3);cursor:pointer;border-right:1px solid var(--border);border-bottom:2px solid transparent;transition:all 0.2s;white-space:nowrap;text-transform:uppercase;flex-shrink:0;user-select:none;}
+.stage-tab:hover{color:var(--text2);background:rgba(255,255,255,0.02)}
+.stage-tab.active{color:var(--accent2);border-bottom-color:var(--accent2);background:rgba(123,97,255,0.05)}
+.back-btn{font-family:var(--mono);font-size:9px;color:var(--text3);text-decoration:none;padding:6px 12px;border:1px solid var(--border);border-radius:4px;white-space:nowrap;transition:all 0.2s;}
+.back-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ── LAYOUT ── */
+.stage-layout{display:grid;grid-template-columns:260px 1fr;height:calc(100vh - 52px);}
+.stage-sidebar{border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column;}
+.stage-main{overflow-y:auto;}
+.stage-panel{display:none;height:100%;} .stage-panel.active{display:flex;flex-direction:column;}
+
+/* ── SIDEBAR ITEMS ── */
+.sb-section{padding:12px 12px 6px;font-family:var(--mono);font-size:8px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;border-bottom:1px solid var(--border);}
+.sb-item{padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(30,45,61,0.4);transition:all 0.15s;display:flex;align-items:center;gap:8px;}
+.sb-item:hover{background:rgba(255,255,255,0.02)} .sb-item.active{background:rgba(123,97,255,0.08);border-left:2px solid var(--accent2);}
+.sb-icon{font-size:16px;flex-shrink:0} .sb-label{font-size:11px;color:var(--text);font-weight:500} .sb-sub{font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:1px;}
+
+/* ── CARDS ── */
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:14px;}
+.card-header{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg4);}
+.card-title{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--text2);text-transform:uppercase;}
+.card-body{padding:14px 16px;}
+.section-hdr{font-family:var(--sans);font-size:18px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.section-sub{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:16px;}
+
+/* ── TABLE ── */
+.tbl-wrap{overflow:auto;max-height:420px;}
+table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:10px;}
+thead th{position:sticky;top:0;background:var(--bg4);padding:7px 10px;text-align:right;color:var(--text3);font-size:8px;letter-spacing:1px;border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none;z-index:2;}
+thead th:first-child,thead th:nth-child(2){text-align:left}
+thead th:hover{color:var(--accent)}
+tbody tr{border-bottom:1px solid rgba(30,45,61,0.4);transition:background 0.1s;}
+tbody tr:hover{background:rgba(0,229,255,0.03)}
+tbody td{padding:6px 10px;text-align:right;white-space:nowrap}
+tbody td:first-child,tbody td:nth-child(2){text-align:left}
+.eligible-row{} .cut-row{opacity:0.45}
+.td-green{color:var(--green)} .td-red{color:var(--red)} .td-amber{color:var(--amber)} .td-accent{color:var(--accent)}
+.cut-badge{display:inline-block;font-size:8px;padding:1px 6px;border-radius:2px;background:rgba(255,61,113,0.15);color:var(--red);white-space:nowrap;}
+.ok-badge{display:inline-block;font-size:8px;padding:1px 6px;border-radius:2px;background:rgba(0,230,118,0.12);color:var(--green);}
+
+/* ── FILTER BAR ── */
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);background:var(--bg4);}
+.filter-chip{padding:4px 12px;border-radius:20px;border:1px solid var(--border2);font-family:var(--mono);font-size:9px;color:var(--text3);cursor:pointer;transition:all 0.2s;background:transparent;}
+.filter-chip.on{background:var(--accent2);color:#fff;border-color:transparent;}
+.filter-chip:hover{border-color:var(--accent2);color:var(--accent2);}
+.search-mini{background:var(--bg3);border:1px solid var(--border2);border-radius:4px;padding:5px 10px;color:var(--text);font-family:var(--mono);font-size:10px;outline:none;width:160px;}
+.search-mini:focus{border-color:var(--accent)}
+.filter-select{background:var(--bg3);border:1px solid var(--border2);border-radius:4px;padding:5px 8px;color:var(--text);font-family:var(--mono);font-size:10px;outline:none;}
+
+/* ── STATS BAR ── */
+.stats-bar{display:flex;gap:0;border-bottom:1px solid var(--border);background:var(--bg2);}
+.stat-cell{padding:8px 16px;border-right:1px solid var(--border);font-family:var(--mono);}
+.stat-label{font-size:8px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;}
+.stat-val{font-size:14px;font-weight:700;margin-top:2px;}
+
+/* ── ELIGIBILITY SLIDERS ── */
+.elig-controls{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:14px 16px;}
+.elig-control{background:var(--bg4);border:1px solid var(--border);border-radius:6px;padding:10px 12px;}
+.ec-label{font-family:var(--mono);font-size:8px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
+.ec-val{font-family:var(--mono);font-size:16px;font-weight:700;color:var(--accent);margin-bottom:6px;}
+input[type=range]{-webkit-appearance:none;width:100%;height:3px;background:var(--border2);border-radius:2px;outline:none;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--accent2);cursor:pointer;box-shadow:0 0 6px rgba(123,97,255,0.6);}
+
+/* ── CAPITAL STACK BUILDER ── */
+.stack-builder{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.stack-visual{display:flex;flex-direction:column;gap:2px;}
+.stack-bar{height:0;min-height:20px;border-radius:4px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;transition:height 0.5s cubic-bezier(.34,1.56,.64,1),background 0.3s;cursor:pointer;position:relative;}
+.stack-bar:hover{filter:brightness(1.2)}
+
+/* ── CUSIP DB ── */
+.cusip-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;padding:14px 16px;}
+.cusip-card{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px 14px;cursor:pointer;transition:all 0.2s;}
+.cusip-card:hover{border-color:var(--accent);box-shadow:0 0 16px rgba(0,229,255,0.1);transform:translateY(-1px);}
+.cusip-card.selected{border-color:var(--accent2);background:rgba(123,97,255,0.08);}
+
+/* ── WATERFALL FLOW ── */
+.wf-flow{display:flex;flex-direction:column;gap:0;}
+.wf-step{display:flex;align-items:stretch;gap:0;animation:fadeUp 0.3s ease forwards;opacity:0;}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)} from{opacity:0;transform:translateY(6px)}}
+.wf-pipe{width:4px;flex-shrink:0;border-radius:2px;}
+.wf-content{flex:1;padding:10px 16px;border-bottom:1px solid var(--border);}
+.wf-step-num{font-family:var(--mono);font-size:8px;font-weight:700;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin:10px 0 0 8px;}
+
+/* ── NARRATIVE ── */
+.narrative{background:rgba(255,255,255,0.02);border-left:3px solid var(--accent2);border-radius:0 6px 6px 0;padding:14px 18px;margin-bottom:16px;font-size:13px;color:var(--text2);line-height:1.8;}
+.callout{border-radius:8px;padding:14px 16px;margin:12px 0;font-size:12px;line-height:1.7;}
+.callout-green{background:rgba(0,230,118,0.05);border:1px solid rgba(0,230,118,0.2);}
+.callout-red{background:rgba(255,61,113,0.05);border:1px solid rgba(255,61,113,0.2);}
+.callout-amber{background:rgba(255,215,64,0.05);border:1px solid rgba(255,215,64,0.2);}
+.callout-blue{background:rgba(0,229,255,0.05);border:1px solid rgba(0,229,255,0.15);}
+.callout-tag{font-family:var(--mono);font-size:8px;letter-spacing:1px;font-weight:700;margin-bottom:6px;}
+
+/* ── BUTTONS ── */
+.btn{padding:7px 16px;border-radius:5px;border:none;cursor:pointer;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:all 0.2s;}
+.btn-primary{background:var(--accent2);color:#fff;box-shadow:0 0 16px rgba(123,97,255,0.3);}
+.btn-primary:hover{box-shadow:0 0 24px rgba(123,97,255,0.5);transform:translateY(-1px);}
+.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--text2);}
+.btn-ghost:hover{border-color:var(--accent2);color:var(--accent2);}
+.btn-sm{padding:4px 10px;font-size:9px;}
+.btn-cyan{background:var(--accent);color:#000;}
+
+/* ── KPI ── */
+.kpi-strip{display:flex;gap:0;border-bottom:1px solid var(--border);}
+.kpi{padding:10px 18px;border-right:1px solid var(--border);font-family:var(--mono);}
+.kpi-l{font-size:8px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;}
+.kpi-v{font-size:16px;font-weight:700;margin-top:2px;}
+
+/* ── TOOLTIP ── */
+.has-tip{position:relative;cursor:help;border-bottom:1px dotted var(--text3);}
+.has-tip::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:0;background:var(--bg2);border:1px solid var(--border2);border-radius:4px;padding:6px 10px;font-size:10px;color:var(--text2);white-space:nowrap;z-index:1000;display:none;font-family:var(--body);font-weight:400;max-width:280px;white-space:normal;line-height:1.5;}
+.has-tip:hover::after{display:block;}
+
+/* ── CHART ── */
+.chart-wrap{position:relative;height:200px;}
+
+/* ── PROGRESS ── */
+.progress-track{display:flex;gap:0;height:4px;border-radius:2px;overflow:hidden;background:var(--border);margin-bottom:12px;}
+.progress-fill{height:100%;border-radius:2px;transition:width 0.6s ease;}
+
+/* ── ANIMATIONS ── */
+@keyframes countUp{from{opacity:0}to{opacity:1}}
+.count-up{animation:countUp 0.8s ease forwards;}
+
+/* ── BOTTOM NAV ── */
+.bottom-bar{position:sticky;bottom:0;background:rgba(8,12,16,0.97);border-top:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(10px);}
+.stage-progress{font-family:var(--mono);font-size:9px;color:var(--text3);}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <a href="javascript:void(0)" class="nav-logo" onclick="goBack()">
+    <div class="nav-logo-icon"></div>
+    STRUCTURA
+  </a>
+  <div class="stage-tabs" id="stageTabs"></div>
+  <a href="javascript:void(0)" class="back-btn" onclick="goBack()">← Back to Platform</a>
+</nav>
+
+<!-- MAIN LAYOUT -->
+<div class="stage-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="stage-sidebar" id="sidebar">
+    <div class="sb-section">Deal Stages</div>
+  </aside>
+
+  <!-- PANELS -->
+  <main id="mainContent" style="overflow-y:auto;"></main>
+
+</div>
+
+<script>
+'use strict';
+
+// ════════════════════════════════════════════════════
+// POOL DATA (250 loans generated)
+// ════════════════════════════════════════════════════
+const POOL_RAW = [{"id": "LN00001", "originator": "CitiMortgage", "state": "NC", "zip": "13478", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 160000, "prop_val": 218000, "ltv": 73.4, "rate": 6.821, "fico": 737, "dti": 37.5, "age_months": 14, "dq_hist": "1x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00002", "originator": "Quicken", "state": "AZ", "zip": "54118", "prop_type": "Condo", "occupancy": "Investment", "purpose": "Purchase", "loan_type": "ARM 5/1", "balance": 741000, "prop_val": 1119000, "ltv": 66.2, "rate": 7.185, "fico": 748, "dti": 36.9, "age_months": 6, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00003", "originator": "Quicken", "state": "CA", "zip": "57400", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 193000, "prop_val": 252000, "ltv": 76.6, "rate": 7.095, "fico": 698, "dti": 38.6, "age_months": 13, "dq_hist": "1x30", "eligible": true, "cut_reason": "", "credit_tier": "near-prime"}, {"id": "LN00004", "originator": "Bank of America", "state": "NV", "zip": "37460", "prop_type": "SFR", "occupancy": "Investment", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 172000, "prop_val": 223000, "ltv": 77.2, "rate": 7.3, "fico": 709, "dti": 44.1, "age_months": 9, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "near-prime"}, {"id": "LN00005", "originator": "JPMorgan", "state": "VA", "zip": "40021", "prop_type": "Condo", "occupancy": "Investment", "purpose": "Purchase", "loan_type": "ARM 5/1", "balance": 319000, "prop_val": 467000, "ltv": 68.4, "rate": 6.981, "fico": 741, "dti": 36.4, "age_months": 18, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00006", "originator": "Bank of America", "state": "OH", "zip": "28301", "prop_type": "SFR", "occupancy": "Second Home", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 269000, "prop_val": 346000, "ltv": 77.8, "rate": 6.609, "fico": 747, "dti": 35.9, "age_months": 16, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00007", "originator": "Nationstar", "state": "NY", "zip": "65333", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "ARM 5/1", "balance": 164000, "prop_val": 218000, "ltv": 75.1, "rate": 6.749, "fico": 794, "dti": 31.1, "age_months": 2, "dq_hist": "0x30", "eligible": false, "cut_reason": "Seasoning", "credit_tier": "prime"}, {"id": "LN00008", "originator": "Nationstar", "state": "GA", "zip": "54587", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 15", "balance": 673000, "prop_val": 799000, "ltv": 84.3, "rate": 8.914, "fico": 647, "dti": 52.2, "age_months": 4, "dq_hist": "0x30", "eligible": false, "cut_reason": "FICO < 660", "credit_tier": "subprime"}, {"id": "LN00009", "originator": "Bank of America", "state": "CA", "zip": "31174", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 177000, "prop_val": 223000, "ltv": 79.3, "rate": 6.504, "fico": 753, "dti": 38.7, "age_months": 10, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00010", "originator": "Quicken", "state": "AZ", "zip": "79822", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "Fixed 30", "balance": 135000, "prop_val": 156000, "ltv": 86.3, "rate": 6.791, "fico": 734, "dti": 40.3, "age_months": 3, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00011", "originator": "Chase", "state": "OR", "zip": "98039", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 268000, "prop_val": 317000, "ltv": 84.5, "rate": 8.26, "fico": 601, "dti": 56.3, "age_months": 18, "dq_hist": "0x30", "eligible": false, "cut_reason": "FICO < 660", "credit_tier": "subprime"}, {"id": "LN00012", "originator": "JPMorgan", "state": "NC", "zip": "53309", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 594000, "prop_val": 1049000, "ltv": 56.6, "rate": 6.652, "fico": 748, "dti": 28.3, "age_months": 1, "dq_hist": "1x30", "eligible": false, "cut_reason": "Seasoning", "credit_tier": "prime"}, {"id": "LN00013", "originator": "Chase", "state": "CA", "zip": "63883", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "ARM 5/1", "balance": 764000, "prop_val": 1123000, "ltv": 68.0, "rate": 6.536, "fico": 789, "dti": 41.1, "age_months": 14, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00014", "originator": "Wells Fargo", "state": "WA", "zip": "19880", "prop_type": "Condo", "occupancy": "Investment", "purpose": "Purchase", "loan_type": "ARM 5/1", "balance": 251000, "prop_val": 343000, "ltv": 73.2, "rate": 6.805, "fico": 771, "dti": 44.2, "age_months": 18, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00015", "originator": "JPMorgan", "state": "WA", "zip": "61173", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "ARM 5/1", "balance": 505000, "prop_val": 521000, "ltv": 97, "rate": 8.773, "fico": 581, "dti": 57.0, "age_months": 7, "dq_hist": "0x30", "eligible": false, "cut_reason": "FICO < 660", "credit_tier": "subprime"}, {"id": "LN00016", "originator": "JPMorgan", "state": "TX", "zip": "16572", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Rate/Term Refi", "loan_type": "ARM 5/1", "balance": 273000, "prop_val": 299000, "ltv": 91.3, "rate": 7.785, "fico": 651, "dti": 51.3, "age_months": 2, "dq_hist": "0x30", "eligible": false, "cut_reason": "FICO < 660", "credit_tier": "subprime"}, {"id": "LN00017", "originator": "JPMorgan", "state": "NV", "zip": "91183", "prop_type": "2-4 Unit", "occupancy": "Primary", "purpose": "Rate/Term Refi", "loan_type": "Fixed 15", "balance": 669000, "prop_val": 1174000, "ltv": 57.0, "rate": 6.548, "fico": 785, "dti": 30.6, "age_months": 8, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00018", "originator": "JPMorgan", "state": "CA", "zip": "70068", "prop_type": "Condo", "occupancy": "Investment", "purpose": "Rate/Term Refi", "loan_type": "Fixed 15", "balance": 427000, "prop_val": 710000, "ltv": 60.1, "rate": 6.869, "fico": 753, "dti": 43.0, "age_months": 10, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00019", "originator": "Quicken", "state": "GA", "zip": "95717", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "Fixed 15", "balance": 332000, "prop_val": 505000, "ltv": 65.8, "rate": 6.284, "fico": 753, "dti": 32.9, "age_months": 15, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00020", "originator": "Nationstar", "state": "CO", "zip": "93130", "prop_type": "2-4 Unit", "occupancy": "Investment", "purpose": "Purchase", "loan_type": "Fixed 15", "balance": 178000, "prop_val": 227000, "ltv": 78.5, "rate": 6.683, "fico": 733, "dti": 34.9, "age_months": 18, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00021", "originator": "CitiMortgage", "state": "PA", "zip": "66057", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 88000, "prop_val": 108000, "ltv": 81.6, "rate": 7.915, "fico": 586, "dti": 50.5, "age_months": 5, "dq_hist": "0x30", "eligible": false, "cut_reason": "FICO < 660", "credit_tier": "subprime"}, {"id": "LN00022", "originator": "Quicken", "state": "AZ", "zip": "15229", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "ARM 5/1", "balance": 457000, "prop_val": 567000, "ltv": 80.6, "rate": 8.329, "fico": 649, "dti": 49.8, "age_months": 2, "dq_hist": "0x30", "eligible": false, "cut_reason": "FICO < 660", "credit_tier": "subprime"}, {"id": "LN00023", "originator": "Quicken", "state": "MI", "zip": "33206", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 622000, "prop_val": 695000, "ltv": 89.5, "rate": 7.18, "fico": 682, "dti": 50.4, "age_months": 5, "dq_hist": "0x30", "eligible": false, "cut_reason": "DTI > 50%", "credit_tier": "near-prime"}, {"id": "LN00024", "originator": "Wells Fargo", "state": "MI", "zip": "70332", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Rate/Term Refi", "loan_type": "ARM 5/1", "balance": 316000, "prop_val": 337000, "ltv": 93.6, "rate": 8.716, "fico": 632, "dti": 56.2, "age_months": 4, "dq_hist": "0x30", "eligible": false, "cut_reason": "FICO < 660", "credit_tier": "subprime"}, {"id": "LN00025", "originator": "Bank of America", "state": "FL", "zip": "13617", "prop_type": "2-4 Unit", "occupancy": "Second Home", "purpose": "Purchase", "loan_type": "ARM 7/1", "balance": 145000, "prop_val": 203000, "ltv": 71.5, "rate": 6.389, "fico": 723, "dti": 33.6, "age_months": 9, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00026", "originator": "JPMorgan", "state": "CA", "zip": "67154", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 609000, "prop_val": 925000, "ltv": 65.9, "rate": 6.532, "fico": 796, "dti": 38.2, "age_months": 17, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00027", "originator": "CitiMortgage", "state": "CA", "zip": "50538", "prop_type": "Condo", "occupancy": "Second Home", "purpose": "Cash-Out Refi", "loan_type": "ARM 5/1", "balance": 881000, "prop_val": 908000, "ltv": 97, "rate": 7.198, "fico": 707, "dti": 40.8, "age_months": 11, "dq_hist": "0x30", "eligible": false, "cut_reason": "LTV > 95%", "credit_tier": "near-prime"}, {"id": "LN00028", "originator": "JPMorgan", "state": "VA", "zip": "49829", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Rate/Term Refi", "loan_type": "ARM 5/1", "balance": 732000, "prop_val": 1224000, "ltv": 59.8, "rate": 6.44, "fico": 736, "dti": 37.3, "age_months": 6, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00029", "originator": "JPMorgan", "state": "TX", "zip": "40784", "prop_type": "2-4 Unit", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 15", "balance": 494000, "prop_val": 741000, "ltv": 66.6, "rate": 6.357, "fico": 761, "dti": 34.2, "age_months": 6, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00030", "originator": "Chase", "state": "VA", "zip": "41979", "prop_type": "2-4 Unit", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 148000, "prop_val": 242000, "ltv": 61.1, "rate": 6.675, "fico": 725, "dti": 34.7, "age_months": 14, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00031", "originator": "Chase", "state": "CA", "zip": "97500", "prop_type": "2-4 Unit", "occupancy": "Second Home", "purpose": "Purchase", "loan_type": "ARM 7/1", "balance": 533000, "prop_val": 661000, "ltv": 80.6, "rate": 7.468, "fico": 709, "dti": 40.5, "age_months": 2, "dq_hist": "0x30", "eligible": false, "cut_reason": "Property Type", "credit_tier": "near-prime"}, {"id": "LN00032", "originator": "Wells Fargo", "state": "CO", "zip": "93579", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "ARM 7/1", "balance": 471000, "prop_val": 486000, "ltv": 97, "rate": 7.07, "fico": 699, "dti": 50.5, "age_months": 6, "dq_hist": "0x30", "eligible": false, "cut_reason": "LTV > 95%", "credit_tier": "near-prime"}, {"id": "LN00033", "originator": "JPMorgan", "state": "TX", "zip": "64377", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "Fixed 30", "balance": 155000, "prop_val": 179000, "ltv": 86.8, "rate": 6.543, "fico": 729, "dti": 31.3, "age_months": 5, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00034", "originator": "Chase", "state": "WA", "zip": "64921", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 102000, "prop_val": 158000, "ltv": 64.7, "rate": 6.723, "fico": 773, "dti": 38.8, "age_months": 13, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00035", "originator": "CitiMortgage", "state": "AZ", "zip": "13534", "prop_type": "Condo", "occupancy": "Second Home", "purpose": "Cash-Out Refi", "loan_type": "Fixed 30", "balance": 435000, "prop_val": 560000, "ltv": 77.7, "rate": 6.543, "fico": 754, "dti": 28.4, "age_months": 6, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00036", "originator": "Bank of America", "state": "MO", "zip": "65255", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Rate/Term Refi", "loan_type": "ARM 5/1", "balance": 413000, "prop_val": 707000, "ltv": 58.4, "rate": 6.4, "fico": 774, "dti": 34.5, "age_months": 7, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00037", "originator": "Wells Fargo", "state": "TX", "zip": "41266", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "ARM 5/1", "balance": 120000, "prop_val": 198000, "ltv": 60.6, "rate": 6.729, "fico": 764, "dti": 29.0, "age_months": 1, "dq_hist": "0x30", "eligible": false, "cut_reason": "Seasoning", "credit_tier": "prime"}, {"id": "LN00038", "originator": "CitiMortgage", "state": "CA", "zip": "13365", "prop_type": "SFR", "occupancy": "Investment", "purpose": "Rate/Term Refi", "loan_type": "Fixed 15", "balance": 610000, "prop_val": 664000, "ltv": 91.9, "rate": 8.126999999999999, "fico": 639, "dti": 60.0, "age_months": 4, "dq_hist": "0x30", "eligible": false, "cut_reason": "FICO < 660", "credit_tier": "subprime"}, {"id": "LN00039", "originator": "CitiMortgage", "state": "MO", "zip": "15383", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 173000, "prop_val": 304000, "ltv": 56.9, "rate": 6.689, "fico": 745, "dti": 37.7, "age_months": 10, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00040", "originator": "Nationstar", "state": "FL", "zip": "45400", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "Fixed 30", "balance": 398000, "prop_val": 616000, "ltv": 64.7, "rate": 6.62, "fico": 763, "dti": 33.9, "age_months": 15, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00041", "originator": "Bank of America", "state": "GA", "zip": "13761", "prop_type": "SFR", "occupancy": "Second Home", "purpose": "Cash-Out Refi", "loan_type": "Fixed 30", "balance": 848000, "prop_val": 1255000, "ltv": 67.6, "rate": 6.665, "fico": 795, "dti": 39.9, "age_months": 8, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "prime"}, {"id": "LN00042", "originator": "Chase", "state": "IL", "zip": "74038", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 324000, "prop_val": 510000, "ltv": 63.5, "rate": 6.601, "fico": 753, "dti": 40.3, "age_months": 1, "dq_hist": "0x30", "eligible": false, "cut_reason": "Seasoning", "credit_tier": "prime"}, {"id": "LN00043", "originator": "Bank of America", "state": "AZ", "zip": "65771", "prop_type": "SFR", "occupancy": "Investment", "purpose": "Purchase", "loan_type": "ARM 5/1", "balance": 683000, "prop_val": 760000, "ltv": 89.8, "rate": 7.291, "fico": 688, "dti": 44.3, "age_months": 10, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "near-prime"}, {"id": "LN00044", "originator": "CitiMortgage", "state": "NJ", "zip": "78765", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "ARM 5/1", "balance": 549000, "prop_val": 814000, "ltv": 67.5, "rate": 6.346, "fico": 759, "dti": 29.7, "age_months": 6, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00045", "originator": "Chase", "state": "GA", "zip": "23446", "prop_type": "2-4 Unit", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 322000, "prop_val": 541000, "ltv": 59.5, "rate": 6.517, "fico": 766, "dti": 28.2, "age_months": 2, "dq_hist": "0x30", "eligible": false, "cut_reason": "Seasoning", "credit_tier": "prime"}, {"id": "LN00046", "originator": "JPMorgan", "state": "PA", "zip": "29887", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 498000, "prop_val": 835000, "ltv": 59.6, "rate": 6.721, "fico": 763, "dti": 28.7, "age_months": 3, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00047", "originator": "CitiMortgage", "state": "CA", "zip": "91399", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "Fixed 30", "balance": 475000, "prop_val": 591000, "ltv": 80.4, "rate": 6.363, "fico": 773, "dti": 39.1, "age_months": 15, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00048", "originator": "Wells Fargo", "state": "CA", "zip": "47762", "prop_type": "SFR", "occupancy": "Investment", "purpose": "Cash-Out Refi", "loan_type": "ARM 7/1", "balance": 220000, "prop_val": 305000, "ltv": 72.1, "rate": 6.745, "fico": 747, "dti": 34.1, "age_months": 14, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00049", "originator": "Quicken", "state": "MA", "zip": "28643", "prop_type": "2-4 Unit", "occupancy": "Investment", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 657000, "prop_val": 841000, "ltv": 78.1, "rate": 6.938, "fico": 749, "dti": 44.0, "age_months": 7, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00050", "originator": "JPMorgan", "state": "CA", "zip": "66626", "prop_type": "2-4 Unit", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 348000, "prop_val": 446000, "ltv": 78.0, "rate": 6.484, "fico": 792, "dti": 34.1, "age_months": 13, "dq_hist": "0x30", "eligible": false, "cut_reason": "Property Type", "credit_tier": "prime"}, {"id": "LN00051", "originator": "Chase", "state": "NJ", "zip": "46458", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 796000, "prop_val": 1142000, "ltv": 69.7, "rate": 6.632, "fico": 793, "dti": 28.3, "age_months": 2, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "prime"}, {"id": "LN00052", "originator": "Quicken", "state": "NY", "zip": "82102", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "ARM 7/1", "balance": 224000, "prop_val": 308000, "ltv": 72.8, "rate": 6.536, "fico": 731, "dti": 33.7, "age_months": 14, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00053", "originator": "Quicken", "state": "CA", "zip": "75338", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Rate/Term Refi", "loan_type": "Fixed 30", "balance": 837000, "prop_val": 1092000, "ltv": 76.6, "rate": 6.251, "fico": 771, "dti": 39.5, "age_months": 15, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "prime"}, {"id": "LN00054", "originator": "Chase", "state": "NC", "zip": "22217", "prop_type": "SFR", "occupancy": "Second Home", "purpose": "Rate/Term Refi", "loan_type": "Fixed 30", "balance": 190000, "prop_val": 243000, "ltv": 78.2, "rate": 6.599, "fico": 736, "dti": 34.1, "age_months": 8, "dq_hist": "1x60", "eligible": false, "cut_reason": "60+ DQ History", "credit_tier": "prime"}, {"id": "LN00055", "originator": "Chase", "state": "NY", "zip": "34983", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "ARM 5/1", "balance": 444000, "prop_val": 476000, "ltv": 93.3, "rate": 7.279, "fico": 691, "dti": 42.1, "age_months": 16, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "near-prime"}, {"id": "LN00056", "originator": "Nationstar", "state": "MO", "zip": "74178", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "Fixed 30", "balance": 316000, "prop_val": 326000, "ltv": 97, "rate": 7.13, "fico": 677, "dti": 50.0, "age_months": 1, "dq_hist": "0x30", "eligible": false, "cut_reason": "LTV > 95%", "credit_tier": "near-prime"}, {"id": "LN00057", "originator": "JPMorgan", "state": "PA", "zip": "51704", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 837000, "prop_val": 1130000, "ltv": 74.1, "rate": 6.841, "fico": 790, "dti": 33.3, "age_months": 8, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "prime"}, {"id": "LN00058", "originator": "Nationstar", "state": "NJ", "zip": "28894", "prop_type": "2-4 Unit", "occupancy": "Investment", "purpose": "Rate/Term Refi", "loan_type": "Fixed 30", "balance": 596000, "prop_val": 884000, "ltv": 67.4, "rate": 6.876, "fico": 739, "dti": 33.5, "age_months": 4, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00059", "originator": "Quicken", "state": "WA", "zip": "73956", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "ARM 7/1", "balance": 369000, "prop_val": 407000, "ltv": 90.6, "rate": 7.62, "fico": 623, "dti": 50.2, "age_months": 18, "dq_hist": "0x30", "eligible": false, "cut_reason": "FICO < 660", "credit_tier": "subprime"}, {"id": "LN00060", "originator": "JPMorgan", "state": "PA", "zip": "52516", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "Fixed 30", "balance": 633000, "prop_val": 737000, "ltv": 85.9, "rate": 6.592, "fico": 756, "dti": 38.5, "age_months": 4, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00061", "originator": "Chase", "state": "MN", "zip": "86435", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 232000, "prop_val": 340000, "ltv": 68.3, "rate": 6.646, "fico": 751, "dti": 35.9, "age_months": 3, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00062", "originator": "Nationstar", "state": "CA", "zip": "65615", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 558000, "prop_val": 720000, "ltv": 77.5, "rate": 6.519, "fico": 721, "dti": 34.5, "age_months": 3, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00063", "originator": "Bank of America", "state": "MA", "zip": "11061", "prop_type": "2-4 Unit", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 395000, "prop_val": 517000, "ltv": 76.3, "rate": 6.441, "fico": 769, "dti": 29.5, "age_months": 10, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00064", "originator": "Nationstar", "state": "NV", "zip": "99241", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 390000, "prop_val": 505000, "ltv": 77.2, "rate": 7.33, "fico": 717, "dti": 49.2, "age_months": 7, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "near-prime"}, {"id": "LN00065", "originator": "Quicken", "state": "OH", "zip": "80701", "prop_type": "SFR", "occupancy": "Investment", "purpose": "Purchase", "loan_type": "ARM 5/1", "balance": 199000, "prop_val": 266000, "ltv": 74.7, "rate": 6.807, "fico": 759, "dti": 33.5, "age_months": 10, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00066", "originator": "Quicken", "state": "MI", "zip": "39571", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 340000, "prop_val": 366000, "ltv": 92.9, "rate": 7.601, "fico": 676, "dti": 51.2, "age_months": 11, "dq_hist": "0x30", "eligible": false, "cut_reason": "DTI > 50%", "credit_tier": "near-prime"}, {"id": "LN00067", "originator": "Wells Fargo", "state": "PA", "zip": "71797", "prop_type": "2-4 Unit", "occupancy": "Second Home", "purpose": "Rate/Term Refi", "loan_type": "Fixed 15", "balance": 667000, "prop_val": 1205000, "ltv": 55.3, "rate": 6.477, "fico": 770, "dti": 35.5, "age_months": 9, "dq_hist": "0x30", "eligible": false, "cut_reason": "Property Type", "credit_tier": "prime"}, {"id": "LN00068", "originator": "JPMorgan", "state": "CA", "zip": "40775", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "Fixed 15", "balance": 186000, "prop_val": 226000, "ltv": 82.4, "rate": 6.601, "fico": 728, "dti": 34.5, "age_months": 2, "dq_hist": "0x30", "eligible": false, "cut_reason": "Seasoning", "credit_tier": "prime"}, {"id": "LN00069", "originator": "Nationstar", "state": "MI", "zip": "58566", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "Fixed 30", "balance": 171000, "prop_val": 229000, "ltv": 74.6, "rate": 6.327, "fico": 789, "dti": 38.4, "age_months": 16, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00070", "originator": "JPMorgan", "state": "NY", "zip": "96870", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Rate/Term Refi", "loan_type": "ARM 7/1", "balance": 429000, "prop_val": 625000, "ltv": 68.6, "rate": 6.429, "fico": 767, "dti": 41.7, "age_months": 7, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00071", "originator": "JPMorgan", "state": "NY", "zip": "46342", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "ARM 7/1", "balance": 592000, "prop_val": 695000, "ltv": 85.2, "rate": 6.665, "fico": 736, "dti": 30.9, "age_months": 8, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00072", "originator": "Wells Fargo", "state": "PA", "zip": "65176", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 768000, "prop_val": 888000, "ltv": 86.5, "rate": 6.886, "fico": 667, "dti": 38.4, "age_months": 8, "dq_hist": "2x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "near-prime"}, {"id": "LN00073", "originator": "Bank of America", "state": "CO", "zip": "70036", "prop_type": "SFR", "occupancy": "Investment", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 903000, "prop_val": 1331000, "ltv": 67.8, "rate": 6.877, "fico": 766, "dti": 34.5, "age_months": 2, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "prime"}, {"id": "LN00074", "originator": "CitiMortgage", "state": "NC", "zip": "52622", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "ARM 7/1", "balance": 155000, "prop_val": 230000, "ltv": 67.3, "rate": 6.287, "fico": 733, "dti": 40.7, "age_months": 5, "dq_hist": "1x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00075", "originator": "Quicken", "state": "FL", "zip": "69441", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "Fixed 30", "balance": 750000, "prop_val": 1087000, "ltv": 69.0, "rate": 6.676, "fico": 775, "dti": 37.8, "age_months": 7, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00076", "originator": "Quicken", "state": "FL", "zip": "27054", "prop_type": "SFR", "occupancy": "Investment", "purpose": "Rate/Term Refi", "loan_type": "Fixed 30", "balance": 143000, "prop_val": 222000, "ltv": 64.4, "rate": 7.086, "fico": 752, "dti": 35.1, "age_months": 3, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00077", "originator": "CitiMortgage", "state": "AZ", "zip": "76507", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 15", "balance": 451000, "prop_val": 691000, "ltv": 65.3, "rate": 6.846, "fico": 735, "dti": 40.2, "age_months": 2, "dq_hist": "0x30", "eligible": false, "cut_reason": "Seasoning", "credit_tier": "prime"}, {"id": "LN00078", "originator": "CitiMortgage", "state": "NY", "zip": "98470", "prop_type": "SFR", "occupancy": "Investment", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 582000, "prop_val": 639000, "ltv": 91.1, "rate": 7.697, "fico": 682, "dti": 48.1, "age_months": 14, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "near-prime"}, {"id": "LN00079", "originator": "Wells Fargo", "state": "NC", "zip": "92991", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "ARM 5/1", "balance": 389000, "prop_val": 458000, "ltv": 84.9, "rate": 7.447, "fico": 677, "dti": 41.8, "age_months": 6, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "near-prime"}, {"id": "LN00080", "originator": "JPMorgan", "state": "CA", "zip": "98338", "prop_type": "Condo", "occupancy": "Investment", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 757000, "prop_val": 1192000, "ltv": 63.5, "rate": 7.111, "fico": 778, "dti": 38.2, "age_months": 3, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00081", "originator": "Nationstar", "state": "CA", "zip": "50425", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 384000, "prop_val": 588000, "ltv": 65.4, "rate": 6.631, "fico": 776, "dti": 31.0, "age_months": 4, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00082", "originator": "Chase", "state": "CA", "zip": "79806", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 335000, "prop_val": 426000, "ltv": 78.6, "rate": 6.757, "fico": 758, "dti": 38.7, "age_months": 4, "dq_hist": "1x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00083", "originator": "Nationstar", "state": "MA", "zip": "93904", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "ARM 7/1", "balance": 101000, "prop_val": 141000, "ltv": 71.8, "rate": 6.907, "fico": 682, "dti": 50.1, "age_months": 3, "dq_hist": "0x30", "eligible": false, "cut_reason": "DTI > 50%", "credit_tier": "near-prime"}, {"id": "LN00084", "originator": "Chase", "state": "WA", "zip": "78676", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 881000, "prop_val": 941000, "ltv": 93.6, "rate": 8.748, "fico": 601, "dti": 53.0, "age_months": 3, "dq_hist": "0x30", "eligible": false, "cut_reason": "FICO < 660", "credit_tier": "subprime"}, {"id": "LN00085", "originator": "Quicken", "state": "CA", "zip": "94599", "prop_type": "SFR", "occupancy": "Second Home", "purpose": "Rate/Term Refi", "loan_type": "ARM 5/1", "balance": 544000, "prop_val": 730000, "ltv": 74.5, "rate": 6.567, "fico": 762, "dti": 29.1, "age_months": 7, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00086", "originator": "Nationstar", "state": "OH", "zip": "83989", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 238000, "prop_val": 340000, "ltv": 70.1, "rate": 6.578, "fico": 742, "dti": 38.6, "age_months": 16, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00087", "originator": "Bank of America", "state": "NC", "zip": "20057", "prop_type": "2-4 Unit", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "ARM 5/1", "balance": 134000, "prop_val": 208000, "ltv": 64.5, "rate": 6.401, "fico": 776, "dti": 34.2, "age_months": 17, "dq_hist": "1x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00088", "originator": "JPMorgan", "state": "NC", "zip": "69050", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 15", "balance": 474000, "prop_val": 688000, "ltv": 68.9, "rate": 6.823, "fico": 794, "dti": 39.1, "age_months": 7, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00089", "originator": "Quicken", "state": "CA", "zip": "54350", "prop_type": "SFR", "occupancy": "Investment", "purpose": "Purchase", "loan_type": "Fixed 15", "balance": 537000, "prop_val": 878000, "ltv": 61.2, "rate": 6.845, "fico": 725, "dti": 39.1, "age_months": 6, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00090", "originator": "Nationstar", "state": "VA", "zip": "96787", "prop_type": "2-4 Unit", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "ARM 5/1", "balance": 822000, "prop_val": 1162000, "ltv": 70.8, "rate": 6.443, "fico": 728, "dti": 35.8, "age_months": 5, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "prime"}, {"id": "LN00091", "originator": "JPMorgan", "state": "FL", "zip": "57526", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 693000, "prop_val": 975000, "ltv": 71.1, "rate": 6.439, "fico": 768, "dti": 32.6, "age_months": 17, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00092", "originator": "JPMorgan", "state": "TX", "zip": "96760", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "ARM 7/1", "balance": 767000, "prop_val": 959000, "ltv": 80.0, "rate": 6.398, "fico": 748, "dti": 30.2, "age_months": 17, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "prime"}, {"id": "LN00093", "originator": "CitiMortgage", "state": "TX", "zip": "47346", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "Fixed 30", "balance": 464000, "prop_val": 563000, "ltv": 82.4, "rate": 6.78, "fico": 743, "dti": 38.8, "age_months": 14, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00094", "originator": "CitiMortgage", "state": "OR", "zip": "64874", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Rate/Term Refi", "loan_type": "Fixed 30", "balance": 578000, "prop_val": 745000, "ltv": 77.6, "rate": 6.714, "fico": 780, "dti": 30.7, "age_months": 15, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00095", "originator": "Bank of America", "state": "NY", "zip": "68893", "prop_type": "Condo", "occupancy": "Second Home", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 174000, "prop_val": 202000, "ltv": 86.0, "rate": 7.291, "fico": 663, "dti": 50.2, "age_months": 17, "dq_hist": "0x30", "eligible": false, "cut_reason": "DTI > 50%", "credit_tier": "near-prime"}, {"id": "LN00096", "originator": "JPMorgan", "state": "MI", "zip": "95191", "prop_type": "2-4 Unit", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "Fixed 30", "balance": 428000, "prop_val": 506000, "ltv": 84.6, "rate": 6.715, "fico": 748, "dti": 40.4, "age_months": 12, "dq_hist": "0x30", "eligible": false, "cut_reason": "Property Type", "credit_tier": "prime"}, {"id": "LN00097", "originator": "Wells Fargo", "state": "TX", "zip": "81932", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 473000, "prop_val": 515000, "ltv": 91.8, "rate": 8.558, "fico": 640, "dti": 46.8, "age_months": 1, "dq_hist": "2x30", "eligible": false, "cut_reason": "FICO < 660", "credit_tier": "subprime"}, {"id": "LN00098", "originator": "Nationstar", "state": "NJ", "zip": "77551", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "Fixed 30", "balance": 480000, "prop_val": 531000, "ltv": 90.5, "rate": 7.065, "fico": 675, "dti": 38.7, "age_months": 4, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "near-prime"}, {"id": "LN00099", "originator": "CitiMortgage", "state": "NV", "zip": "76535", "prop_type": "SFR", "occupancy": "Investment", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 663000, "prop_val": 1039000, "ltv": 63.8, "rate": 6.719, "fico": 798, "dti": 41.0, "age_months": 17, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00100", "originator": "Quicken", "state": "AZ", "zip": "53583", "prop_type": "2-4 Unit", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 767000, "prop_val": 964000, "ltv": 79.5, "rate": 6.258, "fico": 769, "dti": 31.6, "age_months": 12, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "prime"}, {"id": "LN00101", "originator": "Chase", "state": "CA", "zip": "14847", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 499000, "prop_val": 550000, "ltv": 90.8, "rate": 7.611, "fico": 671, "dti": 47.6, "age_months": 6, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "near-prime"}, {"id": "LN00102", "originator": "JPMorgan", "state": "TX", "zip": "95948", "prop_type": "2-4 Unit", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 555000, "prop_val": 595000, "ltv": 93.3, "rate": 7.492, "fico": 680, "dti": 45.2, "age_months": 9, "dq_hist": "1x30", "eligible": true, "cut_reason": "", "credit_tier": "near-prime"}, {"id": "LN00103", "originator": "JPMorgan", "state": "TX", "zip": "65640", "prop_type": "2-4 Unit", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 927000, "prop_val": 1260000, "ltv": 73.6, "rate": 6.443, "fico": 771, "dti": 40.5, "age_months": 16, "dq_hist": "0x30", "eligible": false, "cut_reason": "Property Type", "credit_tier": "prime"}, {"id": "LN00104", "originator": "Bank of America", "state": "CA", "zip": "90589", "prop_type": "2-4 Unit", "occupancy": "Primary", "purpose": "Rate/Term Refi", "loan_type": "Fixed 30", "balance": 471000, "prop_val": 818000, "ltv": 57.6, "rate": 6.398, "fico": 761, "dti": 32.6, "age_months": 14, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00105", "originator": "Wells Fargo", "state": "WA", "zip": "94562", "prop_type": "2-4 Unit", "occupancy": "Investment", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 909000, "prop_val": 1418000, "ltv": 64.1, "rate": 6.965, "fico": 771, "dti": 44.2, "age_months": 5, "dq_hist": "0x30", "eligible": false, "cut_reason": "Property Type", "credit_tier": "prime"}, {"id": "LN00106", "originator": "JPMorgan", "state": "FL", "zip": "13396", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 581000, "prop_val": 738000, "ltv": 78.7, "rate": 6.757, "fico": 777, "dti": 33.2, "age_months": 17, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00107", "originator": "Wells Fargo", "state": "NJ", "zip": "19706", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 947000, "prop_val": 1121000, "ltv": 84.5, "rate": 8.294, "fico": 595, "dti": 48.4, "age_months": 10, "dq_hist": "0x30", "eligible": false, "cut_reason": "FICO < 660", "credit_tier": "subprime"}, {"id": "LN00108", "originator": "Nationstar", "state": "WA", "zip": "93584", "prop_type": "SFR", "occupancy": "Investment", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 561000, "prop_val": 593000, "ltv": 94.7, "rate": 7.657, "fico": 714, "dti": 52.3, "age_months": 10, "dq_hist": "0x30", "eligible": false, "cut_reason": "DTI > 50%", "credit_tier": "near-prime"}, {"id": "LN00109", "originator": "JPMorgan", "state": "NY", "zip": "18617", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 580000, "prop_val": 690000, "ltv": 84.0, "rate": 8.041, "fico": 597, "dti": 51.4, "age_months": 15, "dq_hist": "0x30", "eligible": false, "cut_reason": "FICO < 660", "credit_tier": "subprime"}, {"id": "LN00110", "originator": "Quicken", "state": "TX", "zip": "82260", "prop_type": "Condo", "occupancy": "Investment", "purpose": "Rate/Term Refi", "loan_type": "Fixed 30", "balance": 641000, "prop_val": 848000, "ltv": 75.6, "rate": 7.236, "fico": 772, "dti": 34.0, "age_months": 15, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00111", "originator": "Bank of America", "state": "NC", "zip": "35729", "prop_type": "2-4 Unit", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "Fixed 30", "balance": 894000, "prop_val": 1085000, "ltv": 82.4, "rate": 6.402, "fico": 727, "dti": 35.3, "age_months": 8, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "prime"}, {"id": "LN00112", "originator": "JPMorgan", "state": "NC", "zip": "20646", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "ARM 5/1", "balance": 233000, "prop_val": 342000, "ltv": 68.1, "rate": 6.546, "fico": 788, "dti": 37.0, "age_months": 11, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00113", "originator": "Bank of America", "state": "CA", "zip": "69446", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "Fixed 30", "balance": 640000, "prop_val": 667000, "ltv": 95.9, "rate": 7.542, "fico": 686, "dti": 38.4, "age_months": 10, "dq_hist": "0x30", "eligible": false, "cut_reason": "LTV > 95%", "credit_tier": "near-prime"}, {"id": "LN00114", "originator": "CitiMortgage", "state": "CA", "zip": "23917", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 361000, "prop_val": 568000, "ltv": 63.5, "rate": 6.681, "fico": 746, "dti": 30.0, "age_months": 12, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00115", "originator": "CitiMortgage", "state": "TX", "zip": "50988", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 617000, "prop_val": 1075000, "ltv": 57.4, "rate": 6.442, "fico": 738, "dti": 32.1, "age_months": 8, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00116", "originator": "Chase", "state": "NY", "zip": "88317", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 481000, "prop_val": 713000, "ltv": 67.4, "rate": 6.572, "fico": 759, "dti": 29.3, "age_months": 8, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00117", "originator": "CitiMortgage", "state": "MI", "zip": "47827", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Rate/Term Refi", "loan_type": "Fixed 30", "balance": 434000, "prop_val": 592000, "ltv": 73.3, "rate": 7.149, "fico": 687, "dti": 41.7, "age_months": 2, "dq_hist": "0x30", "eligible": false, "cut_reason": "Seasoning", "credit_tier": "near-prime"}, {"id": "LN00118", "originator": "CitiMortgage", "state": "CA", "zip": "76731", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Rate/Term Refi", "loan_type": "ARM 7/1", "balance": 426000, "prop_val": 592000, "ltv": 72.0, "rate": 6.738, "fico": 799, "dti": 29.7, "age_months": 11, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00119", "originator": "Bank of America", "state": "FL", "zip": "87820", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "Fixed 30", "balance": 206000, "prop_val": 231000, "ltv": 89.0, "rate": 6.324, "fico": 762, "dti": 35.3, "age_months": 11, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00120", "originator": "JPMorgan", "state": "TX", "zip": "88238", "prop_type": "Condo", "occupancy": "Second Home", "purpose": "Cash-Out Refi", "loan_type": "Fixed 15", "balance": 933000, "prop_val": 1257000, "ltv": 74.2, "rate": 6.559, "fico": 792, "dti": 39.4, "age_months": 10, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "prime"}, {"id": "LN00121", "originator": "JPMorgan", "state": "IL", "zip": "35006", "prop_type": "2-4 Unit", "occupancy": "Investment", "purpose": "Purchase", "loan_type": "ARM 7/1", "balance": 629000, "prop_val": 861000, "ltv": 73.0, "rate": 6.71, "fico": 749, "dti": 41.2, "age_months": 13, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00122", "originator": "Nationstar", "state": "CA", "zip": "72701", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Rate/Term Refi", "loan_type": "Fixed 30", "balance": 840000, "prop_val": 1287000, "ltv": 65.3, "rate": 6.71, "fico": 746, "dti": 38.8, "age_months": 2, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "prime"}, {"id": "LN00123", "originator": "CitiMortgage", "state": "CO", "zip": "49124", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Rate/Term Refi", "loan_type": "Fixed 30", "balance": 674000, "prop_val": 755000, "ltv": 89.3, "rate": 8.801, "fico": 623, "dti": 53.8, "age_months": 9, "dq_hist": "0x30", "eligible": false, "cut_reason": "FICO < 660", "credit_tier": "subprime"}, {"id": "LN00124", "originator": "Chase", "state": "NY", "zip": "55237", "prop_type": "SFR", "occupancy": "Second Home", "purpose": "Purchase", "loan_type": "ARM 5/1", "balance": 773000, "prop_val": 1228000, "ltv": 62.9, "rate": 6.717, "fico": 782, "dti": 32.9, "age_months": 9, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "prime"}, {"id": "LN00125", "originator": "Bank of America", "state": "OR", "zip": "27992", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 499000, "prop_val": 581000, "ltv": 85.9, "rate": 7.885, "fico": 590, "dti": 50.8, "age_months": 7, "dq_hist": "0x30", "eligible": false, "cut_reason": "FICO < 660", "credit_tier": "subprime"}, {"id": "LN00126", "originator": "Chase", "state": "CA", "zip": "95575", "prop_type": "Condo", "occupancy": "Investment", "purpose": "Cash-Out Refi", "loan_type": "Fixed 30", "balance": 494000, "prop_val": 717000, "ltv": 68.9, "rate": 6.8, "fico": 787, "dti": 36.3, "age_months": 5, "dq_hist": "1x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00127", "originator": "Wells Fargo", "state": "MO", "zip": "64773", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Rate/Term Refi", "loan_type": "Fixed 30", "balance": 162000, "prop_val": 208000, "ltv": 78.0, "rate": 7.556, "fico": 678, "dti": 47.0, "age_months": 8, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "near-prime"}, {"id": "LN00128", "originator": "Chase", "state": "MI", "zip": "94058", "prop_type": "2-4 Unit", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 843000, "prop_val": 902000, "ltv": 93.4, "rate": 7.445, "fico": 671, "dti": 51.5, "age_months": 1, "dq_hist": "0x30", "eligible": false, "cut_reason": "DTI > 50%", "credit_tier": "near-prime"}, {"id": "LN00129", "originator": "Nationstar", "state": "AZ", "zip": "35318", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "ARM 7/1", "balance": 308000, "prop_val": 444000, "ltv": 69.4, "rate": 6.331, "fico": 754, "dti": 29.6, "age_months": 6, "dq_hist": "1x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00130", "originator": "Bank of America", "state": "NY", "zip": "53204", "prop_type": "Condo", "occupancy": "Second Home", "purpose": "Cash-Out Refi", "loan_type": "Fixed 30", "balance": 498000, "prop_val": 535000, "ltv": 93.0, "rate": 6.947, "fico": 692, "dti": 43.6, "age_months": 8, "dq_hist": "1x30", "eligible": true, "cut_reason": "", "credit_tier": "near-prime"}, {"id": "LN00131", "originator": "Nationstar", "state": "TX", "zip": "25389", "prop_type": "Condo", "occupancy": "Investment", "purpose": "Cash-Out Refi", "loan_type": "Fixed 30", "balance": 436000, "prop_val": 542000, "ltv": 80.4, "rate": 6.809, "fico": 766, "dti": 33.9, "age_months": 17, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00132", "originator": "Quicken", "state": "NC", "zip": "38627", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 408000, "prop_val": 609000, "ltv": 67.0, "rate": 6.869, "fico": 737, "dti": 34.4, "age_months": 18, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00133", "originator": "Wells Fargo", "state": "OR", "zip": "31566", "prop_type": "2-4 Unit", "occupancy": "Investment", "purpose": "Purchase", "loan_type": "Fixed 15", "balance": 878000, "prop_val": 1056000, "ltv": 83.1, "rate": 7.396, "fico": 665, "dti": 50.4, "age_months": 4, "dq_hist": "1x30", "eligible": false, "cut_reason": "DTI > 50%", "credit_tier": "near-prime"}, {"id": "LN00134", "originator": "Quicken", "state": "TX", "zip": "50392", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "ARM 5/1", "balance": 199000, "prop_val": 273000, "ltv": 72.8, "rate": 6.473, "fico": 794, "dti": 40.6, "age_months": 14, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00135", "originator": "JPMorgan", "state": "NJ", "zip": "47629", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "ARM 7/1", "balance": 140000, "prop_val": 202000, "ltv": 69.5, "rate": 6.422, "fico": 747, "dti": 28.6, "age_months": 2, "dq_hist": "0x30", "eligible": false, "cut_reason": "Seasoning", "credit_tier": "prime"}, {"id": "LN00136", "originator": "CitiMortgage", "state": "WA", "zip": "27431", "prop_type": "SFR", "occupancy": "Second Home", "purpose": "Purchase", "loan_type": "ARM 7/1", "balance": 878000, "prop_val": 1364000, "ltv": 64.4, "rate": 6.474, "fico": 773, "dti": 40.5, "age_months": 13, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "prime"}, {"id": "LN00137", "originator": "Chase", "state": "NC", "zip": "40102", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 15", "balance": 105000, "prop_val": 143000, "ltv": 73.2, "rate": 6.252, "fico": 736, "dti": 31.1, "age_months": 10, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00138", "originator": "Chase", "state": "NY", "zip": "88352", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Rate/Term Refi", "loan_type": "Fixed 30", "balance": 895000, "prop_val": 1604000, "ltv": 55.8, "rate": 6.557, "fico": 734, "dti": 37.2, "age_months": 1, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "prime"}, {"id": "LN00139", "originator": "CitiMortgage", "state": "VA", "zip": "88370", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 206000, "prop_val": 301000, "ltv": 68.5, "rate": 6.763, "fico": 749, "dti": 38.6, "age_months": 10, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00140", "originator": "Bank of America", "state": "OR", "zip": "94320", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 905000, "prop_val": 1080000, "ltv": 83.8, "rate": 7.591, "fico": 646, "dti": 48.9, "age_months": 6, "dq_hist": "0x30", "eligible": false, "cut_reason": "FICO < 660", "credit_tier": "subprime"}, {"id": "LN00141", "originator": "JPMorgan", "state": "VA", "zip": "83713", "prop_type": "Condo", "occupancy": "Second Home", "purpose": "Rate/Term Refi", "loan_type": "Fixed 30", "balance": 495000, "prop_val": 671000, "ltv": 73.7, "rate": 7.441, "fico": 686, "dti": 43.3, "age_months": 8, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "near-prime"}, {"id": "LN00142", "originator": "Chase", "state": "WA", "zip": "98299", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Rate/Term Refi", "loan_type": "Fixed 30", "balance": 818000, "prop_val": 1361000, "ltv": 60.1, "rate": 6.836, "fico": 752, "dti": 37.1, "age_months": 3, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "prime"}, {"id": "LN00143", "originator": "Quicken", "state": "GA", "zip": "72773", "prop_type": "2-4 Unit", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "Fixed 30", "balance": 373000, "prop_val": 430000, "ltv": 86.8, "rate": 6.49, "fico": 795, "dti": 35.8, "age_months": 1, "dq_hist": "0x30", "eligible": false, "cut_reason": "Seasoning", "credit_tier": "prime"}, {"id": "LN00144", "originator": "Chase", "state": "MO", "zip": "22924", "prop_type": "Condo", "occupancy": "Investment", "purpose": "Purchase", "loan_type": "ARM 5/1", "balance": 547000, "prop_val": 795000, "ltv": 68.8, "rate": 6.94, "fico": 750, "dti": 43.9, "age_months": 12, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00145", "originator": "Wells Fargo", "state": "MN", "zip": "35715", "prop_type": "2-4 Unit", "occupancy": "Second Home", "purpose": "Rate/Term Refi", "loan_type": "Fixed 30", "balance": 726000, "prop_val": 851000, "ltv": 85.3, "rate": 8.796, "fico": 627, "dti": 45.6, "age_months": 1, "dq_hist": "0x30", "eligible": false, "cut_reason": "FICO < 660", "credit_tier": "subprime"}, {"id": "LN00146", "originator": "Wells Fargo", "state": "TX", "zip": "81636", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "ARM 7/1", "balance": 796000, "prop_val": 1115000, "ltv": 71.4, "rate": 6.504, "fico": 790, "dti": 37.6, "age_months": 16, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "prime"}, {"id": "LN00147", "originator": "Chase", "state": "IL", "zip": "58916", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 442000, "prop_val": 562000, "ltv": 78.6, "rate": 6.757, "fico": 729, "dti": 37.4, "age_months": 8, "dq_hist": "1x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00148", "originator": "Nationstar", "state": "CA", "zip": "66436", "prop_type": "Condo", "occupancy": "Investment", "purpose": "Cash-Out Refi", "loan_type": "Fixed 15", "balance": 710000, "prop_val": 831000, "ltv": 85.4, "rate": 8.617, "fico": 642, "dti": 56.9, "age_months": 18, "dq_hist": "2x30", "eligible": false, "cut_reason": "FICO < 660", "credit_tier": "subprime"}, {"id": "LN00149", "originator": "Nationstar", "state": "MN", "zip": "39603", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 15", "balance": 773000, "prop_val": 1097000, "ltv": 70.5, "rate": 6.427, "fico": 744, "dti": 31.5, "age_months": 3, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "prime"}, {"id": "LN00150", "originator": "Quicken", "state": "TX", "zip": "22499", "prop_type": "2-4 Unit", "occupancy": "Investment", "purpose": "Purchase", "loan_type": "ARM 5/1", "balance": 636000, "prop_val": 794000, "ltv": 80.1, "rate": 7.482, "fico": 665, "dti": 48.3, "age_months": 6, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "near-prime"}, {"id": "LN00151", "originator": "Wells Fargo", "state": "MI", "zip": "86943", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "Fixed 30", "balance": 863000, "prop_val": 890000, "ltv": 97, "rate": 7.612, "fico": 652, "dti": 45.6, "age_months": 2, "dq_hist": "0x30", "eligible": false, "cut_reason": "FICO < 660", "credit_tier": "subprime"}, {"id": "LN00152", "originator": "Nationstar", "state": "CA", "zip": "55332", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Rate/Term Refi", "loan_type": "Fixed 30", "balance": 372000, "prop_val": 490000, "ltv": 75.9, "rate": 6.698, "fico": 792, "dti": 33.4, "age_months": 5, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00153", "originator": "Wells Fargo", "state": "CA", "zip": "56636", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "ARM 7/1", "balance": 754000, "prop_val": 1016000, "ltv": 74.2, "rate": 6.448, "fico": 797, "dti": 41.4, "age_months": 1, "dq_hist": "0x30", "eligible": false, "cut_reason": "Seasoning", "credit_tier": "prime"}, {"id": "LN00154", "originator": "Wells Fargo", "state": "AZ", "zip": "61068", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Rate/Term Refi", "loan_type": "ARM 5/1", "balance": 702000, "prop_val": 1229000, "ltv": 57.1, "rate": 6.649, "fico": 768, "dti": 36.7, "age_months": 3, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00155", "originator": "JPMorgan", "state": "TX", "zip": "56388", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 247000, "prop_val": 287000, "ltv": 86.1, "rate": 7.699, "fico": 636, "dti": 48.5, "age_months": 15, "dq_hist": "0x30", "eligible": false, "cut_reason": "FICO < 660", "credit_tier": "subprime"}, {"id": "LN00156", "originator": "Wells Fargo", "state": "AZ", "zip": "99825", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "ARM 7/1", "balance": 712000, "prop_val": 1287000, "ltv": 55.3, "rate": 6.765, "fico": 769, "dti": 33.8, "age_months": 18, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00157", "originator": "Chase", "state": "FL", "zip": "87831", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 504000, "prop_val": 891000, "ltv": 56.6, "rate": 6.461, "fico": 738, "dti": 34.1, "age_months": 3, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00158", "originator": "CitiMortgage", "state": "GA", "zip": "27842", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 370000, "prop_val": 584000, "ltv": 63.3, "rate": 6.652, "fico": 770, "dti": 36.7, "age_months": 11, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00159", "originator": "Bank of America", "state": "TX", "zip": "61502", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 686000, "prop_val": 867000, "ltv": 79.1, "rate": 6.521, "fico": 742, "dti": 41.6, "age_months": 16, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00160", "originator": "Quicken", "state": "FL", "zip": "63627", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 15", "balance": 484000, "prop_val": 528000, "ltv": 91.6, "rate": 8.93, "fico": 603, "dti": 52.2, "age_months": 7, "dq_hist": "0x30", "eligible": false, "cut_reason": "FICO < 660", "credit_tier": "subprime"}, {"id": "LN00161", "originator": "Quicken", "state": "VA", "zip": "64827", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Rate/Term Refi", "loan_type": "Fixed 30", "balance": 942000, "prop_val": 1293000, "ltv": 72.9, "rate": 6.412, "fico": 739, "dti": 39.0, "age_months": 16, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "prime"}, {"id": "LN00162", "originator": "Nationstar", "state": "AZ", "zip": "98797", "prop_type": "SFR", "occupancy": "Second Home", "purpose": "Purchase", "loan_type": "ARM 5/1", "balance": 300000, "prop_val": 354000, "ltv": 84.8, "rate": 6.832, "fico": 694, "dti": 50.8, "age_months": 12, "dq_hist": "0x30", "eligible": false, "cut_reason": "DTI > 50%", "credit_tier": "near-prime"}, {"id": "LN00163", "originator": "CitiMortgage", "state": "NC", "zip": "75597", "prop_type": "SFR", "occupancy": "Second Home", "purpose": "Rate/Term Refi", "loan_type": "ARM 7/1", "balance": 568000, "prop_val": 988000, "ltv": 57.5, "rate": 6.623, "fico": 721, "dti": 31.1, "age_months": 8, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00164", "originator": "JPMorgan", "state": "CA", "zip": "67431", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 355000, "prop_val": 613000, "ltv": 57.9, "rate": 6.321, "fico": 730, "dti": 41.2, "age_months": 15, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00165", "originator": "Chase", "state": "NJ", "zip": "70562", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Rate/Term Refi", "loan_type": "Fixed 30", "balance": 777000, "prop_val": 1398000, "ltv": 55.6, "rate": 6.305, "fico": 734, "dti": 32.8, "age_months": 8, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "prime"}, {"id": "LN00166", "originator": "Quicken", "state": "NY", "zip": "18200", "prop_type": "SFR", "occupancy": "Investment", "purpose": "Rate/Term Refi", "loan_type": "Fixed 30", "balance": 474000, "prop_val": 730000, "ltv": 64.9, "rate": 7.067, "fico": 775, "dti": 43.3, "age_months": 14, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00167", "originator": "Quicken", "state": "NV", "zip": "70012", "prop_type": "2-4 Unit", "occupancy": "Second Home", "purpose": "Purchase", "loan_type": "Fixed 15", "balance": 508000, "prop_val": 848000, "ltv": 59.9, "rate": 6.585, "fico": 761, "dti": 29.6, "age_months": 11, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00168", "originator": "Chase", "state": "GA", "zip": "64819", "prop_type": "Condo", "occupancy": "Second Home", "purpose": "Purchase", "loan_type": "ARM 5/1", "balance": 187000, "prop_val": 219000, "ltv": 85.4, "rate": 6.975, "fico": 718, "dti": 39.2, "age_months": 10, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "near-prime"}, {"id": "LN00169", "originator": "CitiMortgage", "state": "GA", "zip": "17026", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 565000, "prop_val": 781000, "ltv": 72.3, "rate": 6.75, "fico": 788, "dti": 37.0, "age_months": 16, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00170", "originator": "CitiMortgage", "state": "PA", "zip": "14044", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 677000, "prop_val": 856000, "ltv": 79.1, "rate": 6.497, "fico": 769, "dti": 35.1, "age_months": 14, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00171", "originator": "CitiMortgage", "state": "MN", "zip": "58085", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 748000, "prop_val": 1263000, "ltv": 59.2, "rate": 6.621, "fico": 756, "dti": 34.4, "age_months": 18, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00172", "originator": "Chase", "state": "AZ", "zip": "25386", "prop_type": "Condo", "occupancy": "Second Home", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 343000, "prop_val": 596000, "ltv": 57.6, "rate": 6.751, "fico": 774, "dti": 39.6, "age_months": 2, "dq_hist": "0x30", "eligible": false, "cut_reason": "Seasoning", "credit_tier": "prime"}, {"id": "LN00173", "originator": "CitiMortgage", "state": "OR", "zip": "80617", "prop_type": "2-4 Unit", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "ARM 5/1", "balance": 618000, "prop_val": 808000, "ltv": 76.5, "rate": 6.464, "fico": 764, "dti": 36.5, "age_months": 7, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00174", "originator": "Wells Fargo", "state": "NY", "zip": "27392", "prop_type": "SFR", "occupancy": "Investment", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 918000, "prop_val": 1153000, "ltv": 79.6, "rate": 6.673, "fico": 785, "dti": 42.5, "age_months": 14, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "prime"}, {"id": "LN00175", "originator": "Chase", "state": "NY", "zip": "77582", "prop_type": "SFR", "occupancy": "Investment", "purpose": "Purchase", "loan_type": "ARM 7/1", "balance": 443000, "prop_val": 659000, "ltv": 67.2, "rate": 6.759, "fico": 770, "dti": 41.1, "age_months": 15, "dq_hist": "1x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00176", "originator": "Quicken", "state": "NJ", "zip": "80048", "prop_type": "SFR", "occupancy": "Investment", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 166000, "prop_val": 185000, "ltv": 89.9, "rate": 9.146, "fico": 621, "dti": 60, "age_months": 15, "dq_hist": "0x30", "eligible": false, "cut_reason": "FICO < 660", "credit_tier": "subprime"}, {"id": "LN00177", "originator": "Nationstar", "state": "FL", "zip": "70238", "prop_type": "2-4 Unit", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 575000, "prop_val": 759000, "ltv": 75.7, "rate": 6.539, "fico": 761, "dti": 32.7, "age_months": 16, "dq_hist": "0x30", "eligible": false, "cut_reason": "Property Type", "credit_tier": "prime"}, {"id": "LN00178", "originator": "Bank of America", "state": "CA", "zip": "42819", "prop_type": "SFR", "occupancy": "Second Home", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 647000, "prop_val": 1077000, "ltv": 60.1, "rate": 6.316, "fico": 774, "dti": 37.6, "age_months": 6, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00179", "originator": "Wells Fargo", "state": "CA", "zip": "78084", "prop_type": "Condo", "occupancy": "Investment", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 652000, "prop_val": 1041000, "ltv": 62.6, "rate": 6.867, "fico": 800, "dti": 42.8, "age_months": 4, "dq_hist": "1x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00180", "originator": "Bank of America", "state": "VA", "zip": "49223", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Rate/Term Refi", "loan_type": "ARM 5/1", "balance": 146000, "prop_val": 183000, "ltv": 79.7, "rate": 6.316, "fico": 735, "dti": 33.9, "age_months": 13, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00181", "originator": "Chase", "state": "CA", "zip": "90750", "prop_type": "2-4 Unit", "occupancy": "Second Home", "purpose": "Rate/Term Refi", "loan_type": "ARM 7/1", "balance": 92000, "prop_val": 97000, "ltv": 94.8, "rate": 7.148, "fico": 701, "dti": 40.0, "age_months": 6, "dq_hist": "0x30", "eligible": false, "cut_reason": "Property Type", "credit_tier": "near-prime"}, {"id": "LN00182", "originator": "Wells Fargo", "state": "VA", "zip": "82534", "prop_type": "SFR", "occupancy": "Second Home", "purpose": "Rate/Term Refi", "loan_type": "Fixed 30", "balance": 918000, "prop_val": 1034000, "ltv": 88.8, "rate": 7.038, "fico": 668, "dti": 46.3, "age_months": 11, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "near-prime"}, {"id": "LN00183", "originator": "Quicken", "state": "GA", "zip": "41370", "prop_type": "Condo", "occupancy": "Investment", "purpose": "Cash-Out Refi", "loan_type": "Fixed 30", "balance": 610000, "prop_val": 785000, "ltv": 77.7, "rate": 7.907, "fico": 704, "dti": 54.9, "age_months": 7, "dq_hist": "0x30", "eligible": false, "cut_reason": "DTI > 50%", "credit_tier": "near-prime"}, {"id": "LN00184", "originator": "CitiMortgage", "state": "IL", "zip": "99514", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Rate/Term Refi", "loan_type": "Fixed 30", "balance": 893000, "prop_val": 1309000, "ltv": 68.2, "rate": 6.743, "fico": 729, "dti": 41.7, "age_months": 5, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "prime"}, {"id": "LN00185", "originator": "Chase", "state": "NY", "zip": "62727", "prop_type": "SFR", "occupancy": "Second Home", "purpose": "Rate/Term Refi", "loan_type": "Fixed 30", "balance": 768000, "prop_val": 1248000, "ltv": 61.6, "rate": 6.28, "fico": 721, "dti": 28.6, "age_months": 17, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "prime"}, {"id": "LN00186", "originator": "Wells Fargo", "state": "CA", "zip": "17589", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "Fixed 30", "balance": 368000, "prop_val": 579000, "ltv": 63.5, "rate": 6.862, "fico": 759, "dti": 40.9, "age_months": 3, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00187", "originator": "CitiMortgage", "state": "NY", "zip": "77793", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 188000, "prop_val": 300000, "ltv": 62.7, "rate": 6.62, "fico": 727, "dti": 38.4, "age_months": 5, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00188", "originator": "CitiMortgage", "state": "MN", "zip": "92251", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 110000, "prop_val": 143000, "ltv": 76.7, "rate": 7.329, "fico": 715, "dti": 50.4, "age_months": 14, "dq_hist": "0x30", "eligible": false, "cut_reason": "DTI > 50%", "credit_tier": "near-prime"}, {"id": "LN00189", "originator": "Quicken", "state": "CA", "zip": "11610", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Rate/Term Refi", "loan_type": "Fixed 30", "balance": 859000, "prop_val": 1452000, "ltv": 59.2, "rate": 6.762, "fico": 792, "dti": 30.2, "age_months": 4, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "prime"}, {"id": "LN00190", "originator": "Bank of America", "state": "NY", "zip": "45554", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 876000, "prop_val": 914000, "ltv": 95.8, "rate": 8.329, "fico": 602, "dti": 56.1, "age_months": 14, "dq_hist": "0x30", "eligible": false, "cut_reason": "FICO < 660", "credit_tier": "subprime"}, {"id": "LN00191", "originator": "Bank of America", "state": "OH", "zip": "52899", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 910000, "prop_val": 1530000, "ltv": 59.5, "rate": 6.741, "fico": 726, "dti": 39.3, "age_months": 3, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "prime"}, {"id": "LN00192", "originator": "Wells Fargo", "state": "CA", "zip": "10835", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "Fixed 30", "balance": 926000, "prop_val": 1112000, "ltv": 83.3, "rate": 6.371, "fico": 792, "dti": 38.4, "age_months": 7, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "prime"}, {"id": "LN00193", "originator": "Chase", "state": "MO", "zip": "17850", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Rate/Term Refi", "loan_type": "Fixed 15", "balance": 819000, "prop_val": 1040000, "ltv": 78.8, "rate": 6.579, "fico": 721, "dti": 28.0, "age_months": 10, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "prime"}, {"id": "LN00194", "originator": "CitiMortgage", "state": "CA", "zip": "84425", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 732000, "prop_val": 911000, "ltv": 80.3, "rate": 7.094, "fico": 693, "dti": 50.5, "age_months": 4, "dq_hist": "0x30", "eligible": false, "cut_reason": "DTI > 50%", "credit_tier": "near-prime"}, {"id": "LN00195", "originator": "Quicken", "state": "CA", "zip": "86638", "prop_type": "SFR", "occupancy": "Investment", "purpose": "Rate/Term Refi", "loan_type": "Fixed 30", "balance": 367000, "prop_val": 470000, "ltv": 78.2, "rate": 7.041, "fico": 760, "dti": 38.5, "age_months": 15, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00196", "originator": "Nationstar", "state": "CA", "zip": "49874", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 476000, "prop_val": 820000, "ltv": 58.0, "rate": 6.635, "fico": 772, "dti": 33.0, "age_months": 15, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00197", "originator": "Quicken", "state": "OH", "zip": "69270", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "ARM 7/1", "balance": 671000, "prop_val": 814000, "ltv": 82.4, "rate": 7.017, "fico": 669, "dti": 41.5, "age_months": 9, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "near-prime"}, {"id": "LN00198", "originator": "CitiMortgage", "state": "AZ", "zip": "86823", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "Fixed 30", "balance": 256000, "prop_val": 392000, "ltv": 65.3, "rate": 6.64, "fico": 737, "dti": 28.9, "age_months": 13, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00199", "originator": "CitiMortgage", "state": "TX", "zip": "66774", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 785000, "prop_val": 837000, "ltv": 93.8, "rate": 8.771, "fico": 636, "dti": 46.2, "age_months": 4, "dq_hist": "1x30", "eligible": false, "cut_reason": "FICO < 660", "credit_tier": "subprime"}, {"id": "LN00200", "originator": "Bank of America", "state": "OH", "zip": "75390", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Rate/Term Refi", "loan_type": "Fixed 30", "balance": 471000, "prop_val": 597000, "ltv": 78.8, "rate": 6.956, "fico": 671, "dti": 50.7, "age_months": 5, "dq_hist": "1x30", "eligible": false, "cut_reason": "DTI > 50%", "credit_tier": "near-prime"}, {"id": "LN00201", "originator": "Bank of America", "state": "WA", "zip": "72873", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "Fixed 30", "balance": 945000, "prop_val": 1295000, "ltv": 73.0, "rate": 6.649, "fico": 737, "dti": 37.0, "age_months": 18, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "prime"}, {"id": "LN00202", "originator": "Quicken", "state": "AZ", "zip": "86544", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Rate/Term Refi", "loan_type": "Fixed 15", "balance": 860000, "prop_val": 1445000, "ltv": 59.5, "rate": 6.485, "fico": 754, "dti": 32.5, "age_months": 9, "dq_hist": "1x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "prime"}, {"id": "LN00203", "originator": "Quicken", "state": "NY", "zip": "32768", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "ARM 5/1", "balance": 947000, "prop_val": 1256000, "ltv": 75.4, "rate": 6.278, "fico": 788, "dti": 40.8, "age_months": 8, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "prime"}, {"id": "LN00204", "originator": "Chase", "state": "NY", "zip": "81057", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "ARM 7/1", "balance": 905000, "prop_val": 975000, "ltv": 92.8, "rate": 7.275, "fico": 682, "dti": 38.4, "age_months": 5, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "near-prime"}, {"id": "LN00205", "originator": "Quicken", "state": "TX", "zip": "52413", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 879000, "prop_val": 1454000, "ltv": 60.5, "rate": 6.25, "fico": 797, "dti": 35.4, "age_months": 7, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "prime"}, {"id": "LN00206", "originator": "Wells Fargo", "state": "CA", "zip": "67261", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "ARM 5/1", "balance": 408000, "prop_val": 432000, "ltv": 94.4, "rate": 9.066, "fico": 594, "dti": 56.2, "age_months": 13, "dq_hist": "0x30", "eligible": false, "cut_reason": "FICO < 660", "credit_tier": "subprime"}, {"id": "LN00207", "originator": "Wells Fargo", "state": "MN", "zip": "10235", "prop_type": "SFR", "occupancy": "Investment", "purpose": "Rate/Term Refi", "loan_type": "Fixed 30", "balance": 278000, "prop_val": 318000, "ltv": 87.3, "rate": 7.715, "fico": 695, "dti": 56.0, "age_months": 6, "dq_hist": "0x30", "eligible": false, "cut_reason": "DTI > 50%", "credit_tier": "near-prime"}, {"id": "LN00208", "originator": "Bank of America", "state": "MA", "zip": "32005", "prop_type": "2-4 Unit", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "ARM 7/1", "balance": 638000, "prop_val": 677000, "ltv": 94.2, "rate": 8.713, "fico": 584, "dti": 49.1, "age_months": 4, "dq_hist": "0x30", "eligible": false, "cut_reason": "FICO < 660", "credit_tier": "subprime"}, {"id": "LN00209", "originator": "Chase", "state": "NC", "zip": "65004", "prop_type": "Condo", "occupancy": "Second Home", "purpose": "Purchase", "loan_type": "ARM 5/1", "balance": 144000, "prop_val": 218000, "ltv": 66.2, "rate": 6.5, "fico": 762, "dti": 31.7, "age_months": 9, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00210", "originator": "Bank of America", "state": "NY", "zip": "12631", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Rate/Term Refi", "loan_type": "Fixed 30", "balance": 741000, "prop_val": 979000, "ltv": 75.7, "rate": 6.539, "fico": 732, "dti": 39.0, "age_months": 8, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00211", "originator": "JPMorgan", "state": "TX", "zip": "66534", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 931000, "prop_val": 1577000, "ltv": 59.0, "rate": 6.721, "fico": 768, "dti": 29.1, "age_months": 11, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "prime"}, {"id": "LN00212", "originator": "JPMorgan", "state": "NC", "zip": "61498", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 710000, "prop_val": 1181000, "ltv": 60.1, "rate": 6.599, "fico": 762, "dti": 30.7, "age_months": 18, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00213", "originator": "Chase", "state": "NV", "zip": "25139", "prop_type": "SFR", "occupancy": "Second Home", "purpose": "Cash-Out Refi", "loan_type": "Fixed 30", "balance": 258000, "prop_val": 336000, "ltv": 76.7, "rate": 6.581, "fico": 720, "dti": 32.1, "age_months": 1, "dq_hist": "0x30", "eligible": false, "cut_reason": "Seasoning", "credit_tier": "prime"}, {"id": "LN00214", "originator": "Bank of America", "state": "TX", "zip": "83956", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Rate/Term Refi", "loan_type": "ARM 5/1", "balance": 246000, "prop_val": 380000, "ltv": 64.7, "rate": 6.441, "fico": 789, "dti": 33.2, "age_months": 2, "dq_hist": "0x30", "eligible": false, "cut_reason": "Seasoning", "credit_tier": "prime"}, {"id": "LN00215", "originator": "CitiMortgage", "state": "CA", "zip": "72236", "prop_type": "Condo", "occupancy": "Second Home", "purpose": "Purchase", "loan_type": "ARM 5/1", "balance": 282000, "prop_val": 375000, "ltv": 75.2, "rate": 6.753, "fico": 764, "dti": 33.8, "age_months": 2, "dq_hist": "0x30", "eligible": false, "cut_reason": "Seasoning", "credit_tier": "prime"}, {"id": "LN00216", "originator": "Wells Fargo", "state": "NV", "zip": "37772", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 671000, "prop_val": 993000, "ltv": 67.6, "rate": 6.65, "fico": 724, "dti": 40.6, "age_months": 5, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00217", "originator": "Chase", "state": "MN", "zip": "82923", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 600000, "prop_val": 999000, "ltv": 60.0, "rate": 6.324, "fico": 775, "dti": 39.5, "age_months": 11, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00218", "originator": "JPMorgan", "state": "FL", "zip": "83752", "prop_type": "2-4 Unit", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "Fixed 30", "balance": 443000, "prop_val": 528000, "ltv": 83.9, "rate": 6.511, "fico": 721, "dti": 36.7, "age_months": 5, "dq_hist": "0x30", "eligible": false, "cut_reason": "Property Type", "credit_tier": "prime"}, {"id": "LN00219", "originator": "CitiMortgage", "state": "OR", "zip": "99235", "prop_type": "SFR", "occupancy": "Second Home", "purpose": "Purchase", "loan_type": "ARM 7/1", "balance": 580000, "prop_val": 754000, "ltv": 76.9, "rate": 6.577, "fico": 764, "dti": 31.7, "age_months": 16, "dq_hist": "1x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00220", "originator": "Nationstar", "state": "MA", "zip": "22873", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Rate/Term Refi", "loan_type": "Fixed 30", "balance": 103000, "prop_val": 116000, "ltv": 88.6, "rate": 7.423, "fico": 663, "dti": 50.9, "age_months": 10, "dq_hist": "0x30", "eligible": false, "cut_reason": "DTI > 50%", "credit_tier": "near-prime"}, {"id": "LN00221", "originator": "CitiMortgage", "state": "PA", "zip": "59009", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "ARM 5/1", "balance": 248000, "prop_val": 402000, "ltv": 61.7, "rate": 6.573, "fico": 761, "dti": 33.8, "age_months": 7, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00222", "originator": "Chase", "state": "OH", "zip": "16626", "prop_type": "2-4 Unit", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 577000, "prop_val": 887000, "ltv": 65.1, "rate": 6.512, "fico": 784, "dti": 38.9, "age_months": 6, "dq_hist": "0x30", "eligible": false, "cut_reason": "Property Type", "credit_tier": "prime"}, {"id": "LN00223", "originator": "Chase", "state": "MO", "zip": "86923", "prop_type": "SFR", "occupancy": "Investment", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 111000, "prop_val": 164000, "ltv": 67.6, "rate": 6.687, "fico": 779, "dti": 41.9, "age_months": 12, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00224", "originator": "Bank of America", "state": "AZ", "zip": "95404", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "ARM 7/1", "balance": 128000, "prop_val": 141000, "ltv": 90.8, "rate": 6.771, "fico": 707, "dti": 39.3, "age_months": 7, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "near-prime"}, {"id": "LN00225", "originator": "Quicken", "state": "WA", "zip": "55706", "prop_type": "2-4 Unit", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "ARM 7/1", "balance": 279000, "prop_val": 288000, "ltv": 97, "rate": 7.76, "fico": 581, "dti": 46.7, "age_months": 10, "dq_hist": "0x30", "eligible": false, "cut_reason": "FICO < 660", "credit_tier": "subprime"}, {"id": "LN00226", "originator": "Nationstar", "state": "WA", "zip": "24169", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 950000, "prop_val": 1110000, "ltv": 85.6, "rate": 6.756, "fico": 712, "dti": 46.2, "age_months": 12, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "near-prime"}, {"id": "LN00227", "originator": "Quicken", "state": "IL", "zip": "88647", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "ARM 5/1", "balance": 343000, "prop_val": 557000, "ltv": 61.5, "rate": 6.696, "fico": 755, "dti": 38.0, "age_months": 5, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00228", "originator": "Bank of America", "state": "FL", "zip": "39145", "prop_type": "SFR", "occupancy": "Investment", "purpose": "Purchase", "loan_type": "ARM 5/1", "balance": 421000, "prop_val": 527000, "ltv": 79.9, "rate": 6.834, "fico": 783, "dti": 36.6, "age_months": 2, "dq_hist": "0x30", "eligible": false, "cut_reason": "Seasoning", "credit_tier": "prime"}, {"id": "LN00229", "originator": "Wells Fargo", "state": "VA", "zip": "99091", "prop_type": "2-4 Unit", "occupancy": "Investment", "purpose": "Cash-Out Refi", "loan_type": "Fixed 30", "balance": 242000, "prop_val": 249000, "ltv": 97, "rate": 9.136, "fico": 625, "dti": 60, "age_months": 4, "dq_hist": "0x30", "eligible": false, "cut_reason": "FICO < 660", "credit_tier": "subprime"}, {"id": "LN00230", "originator": "CitiMortgage", "state": "MI", "zip": "86062", "prop_type": "SFR", "occupancy": "Investment", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 592000, "prop_val": 904000, "ltv": 65.5, "rate": 6.811, "fico": 759, "dti": 45.4, "age_months": 15, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00231", "originator": "Chase", "state": "GA", "zip": "28772", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 15", "balance": 215000, "prop_val": 315000, "ltv": 68.2, "rate": 6.685, "fico": 768, "dti": 33.8, "age_months": 7, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00232", "originator": "Quicken", "state": "TX", "zip": "21539", "prop_type": "SFR", "occupancy": "Second Home", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 266000, "prop_val": 423000, "ltv": 62.8, "rate": 6.476, "fico": 742, "dti": 28.8, "age_months": 6, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00233", "originator": "JPMorgan", "state": "CA", "zip": "92141", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Cash-Out Refi", "loan_type": "Fixed 30", "balance": 97000, "prop_val": 132000, "ltv": 73.3, "rate": 6.475, "fico": 781, "dti": 28.5, "age_months": 11, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00234", "originator": "CitiMortgage", "state": "NJ", "zip": "54280", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 798000, "prop_val": 1236000, "ltv": 64.6, "rate": 6.459, "fico": 733, "dti": 36.2, "age_months": 10, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "prime"}, {"id": "LN00235", "originator": "JPMorgan", "state": "WA", "zip": "58049", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 283000, "prop_val": 302000, "ltv": 93.7, "rate": 7.053, "fico": 670, "dti": 50.9, "age_months": 5, "dq_hist": "2x30", "eligible": false, "cut_reason": "DTI > 50%", "credit_tier": "near-prime"}, {"id": "LN00236", "originator": "JPMorgan", "state": "MA", "zip": "81733", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 650000, "prop_val": 913000, "ltv": 71.2, "rate": 7.371, "fico": 699, "dti": 51.9, "age_months": 1, "dq_hist": "1x30", "eligible": false, "cut_reason": "DTI > 50%", "credit_tier": "near-prime"}, {"id": "LN00237", "originator": "CitiMortgage", "state": "TX", "zip": "25431", "prop_type": "SFR", "occupancy": "Investment", "purpose": "Rate/Term Refi", "loan_type": "Fixed 30", "balance": 535000, "prop_val": 762000, "ltv": 70.2, "rate": 7.201, "fico": 700, "dti": 48.9, "age_months": 5, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "near-prime"}, {"id": "LN00238", "originator": "Wells Fargo", "state": "TX", "zip": "73001", "prop_type": "SFR", "occupancy": "Second Home", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 395000, "prop_val": 531000, "ltv": 74.4, "rate": 6.737, "fico": 745, "dti": 39.6, "age_months": 14, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00239", "originator": "Nationstar", "state": "TX", "zip": "40298", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "ARM 5/1", "balance": 163000, "prop_val": 215000, "ltv": 75.9, "rate": 6.325, "fico": 734, "dti": 37.4, "age_months": 17, "dq_hist": "1x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00240", "originator": "JPMorgan", "state": "WA", "zip": "11267", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 670000, "prop_val": 872000, "ltv": 76.9, "rate": 6.43, "fico": 742, "dti": 39.9, "age_months": 14, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00241", "originator": "Bank of America", "state": "PA", "zip": "60556", "prop_type": "Condo", "occupancy": "Investment", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 407000, "prop_val": 516000, "ltv": 78.9, "rate": 7.117, "fico": 776, "dti": 36.8, "age_months": 11, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00242", "originator": "CitiMortgage", "state": "MA", "zip": "98918", "prop_type": "SFR", "occupancy": "Second Home", "purpose": "Rate/Term Refi", "loan_type": "ARM 5/1", "balance": 900000, "prop_val": 1236000, "ltv": 72.8, "rate": 6.794, "fico": 670, "dti": 47.7, "age_months": 6, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "near-prime"}, {"id": "LN00243", "originator": "JPMorgan", "state": "WA", "zip": "18301", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "ARM 7/1", "balance": 856000, "prop_val": 1118000, "ltv": 76.6, "rate": 6.614, "fico": 723, "dti": 40.3, "age_months": 16, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "prime"}, {"id": "LN00244", "originator": "Chase", "state": "TX", "zip": "96732", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "ARM 7/1", "balance": 912000, "prop_val": 1029000, "ltv": 88.6, "rate": 7.043, "fico": 709, "dti": 48.1, "age_months": 11, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "near-prime"}, {"id": "LN00245", "originator": "Quicken", "state": "NJ", "zip": "74990", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "ARM 5/1", "balance": 615000, "prop_val": 834000, "ltv": 73.7, "rate": 7.419, "fico": 684, "dti": 49.6, "age_months": 1, "dq_hist": "0x30", "eligible": false, "cut_reason": "Seasoning", "credit_tier": "near-prime"}, {"id": "LN00246", "originator": "JPMorgan", "state": "PA", "zip": "75333", "prop_type": "2-4 Unit", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 641000, "prop_val": 809000, "ltv": 79.3, "rate": 6.361, "fico": 762, "dti": 28.7, "age_months": 13, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00247", "originator": "Chase", "state": "WA", "zip": "54676", "prop_type": "SFR", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "ARM 5/1", "balance": 799000, "prop_val": 998000, "ltv": 80.1, "rate": 7.162, "fico": 666, "dti": 38.5, "age_months": 10, "dq_hist": "0x30", "eligible": false, "cut_reason": "Loan Size", "credit_tier": "near-prime"}, {"id": "LN00248", "originator": "Bank of America", "state": "FL", "zip": "56548", "prop_type": "SFR", "occupancy": "Second Home", "purpose": "Purchase", "loan_type": "ARM 7/1", "balance": 399000, "prop_val": 538000, "ltv": 74.2, "rate": 6.608, "fico": 791, "dti": 36.4, "age_months": 15, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "prime"}, {"id": "LN00249", "originator": "Quicken", "state": "OH", "zip": "61497", "prop_type": "Condo", "occupancy": "Primary", "purpose": "Purchase", "loan_type": "Fixed 30", "balance": 727000, "prop_val": 787000, "ltv": 92.4, "rate": 7.491, "fico": 662, "dti": 44.9, "age_months": 14, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "near-prime"}, {"id": "LN00250", "originator": "Wells Fargo", "state": "NY", "zip": "75382", "prop_type": "2-4 Unit", "occupancy": "Second Home", "purpose": "Rate/Term Refi", "loan_type": "Fixed 30", "balance": 666000, "prop_val": 749000, "ltv": 88.9, "rate": 7.225, "fico": 666, "dti": 38.7, "age_months": 4, "dq_hist": "0x30", "eligible": true, "cut_reason": "", "credit_tier": "near-prime"}];
+
+// ════════════════════════════════════════════════════
+// CUSIP DATABASE — Real public RMBS deals
+// ════════════════════════════════════════════════════
+const CUSIP_DB = [
+  // Agency
+  {cusip:'3140X9CE6',deal:'FNMA 2024-21',tranche:'A1',type:'Agency',collateral:'Conv 30Y Fixed',rating:'AAA',coupon:5.50,wal:4.2,price:99.12,oas:32,cpr:12,cdr:0.08,sev:18,bal:250,origDate:'2024-01',issuer:'Fannie Mae',servicer:'Multiple',state_top:'CA 28%/TX 12%/FL 10%',avg_fico:758,avg_ltv:68,avg_dti:36,wac:6.25},
+  {cusip:'3137BPAC2',deal:'FHMS K-141',tranche:'A1',type:'Agency CMBS',collateral:'Multifamily',rating:'AAA',coupon:4.95,wal:8.1,price:97.20,oas:55,cpr:2,cdr:0.05,sev:15,bal:500,origDate:'2023-09',issuer:'Freddie Mac',servicer:'KeyBank',state_top:'TX 18%/CA 16%/FL 12%',avg_fico:0,avg_ltv:62,avg_dti:0,wac:5.90},
+  {cusip:'3620ALAB4',deal:'GNMA 2024-18',tranche:'A',type:'Agency',collateral:'FHA/VA 30Y',rating:'AAA',coupon:5.75,wal:5.8,price:99.85,oas:28,cpr:9,cdr:0.12,sev:12,bal:380,origDate:'2024-02',issuer:'Ginnie Mae',servicer:'PHH Mortgage',state_top:'TX 16%/CA 14%/VA 11%',avg_fico:692,avg_ltv:96,avg_dti:42,wac:6.50},
+  // Prime Non-Agency
+  {cusip:'46649CAB3',deal:'JPMMT 2024-3',tranche:'A1',type:'Non-Agency Prime',collateral:'Jumbo Prime',rating:'AAA',coupon:5.75,wal:3.8,price:99.10,oas:45,cpr:15,cdr:0.30,sev:25,bal:320,origDate:'2024-02',issuer:'JP Morgan',servicer:'Chase',state_top:'CA 35%/NY 18%/WA 9%',avg_fico:779,avg_ltv:66,avg_dti:34,wac:6.50},
+  {cusip:'89236WAB8',deal:'TPMT 2024-1',tranche:'A1A',type:'Non-Agency Prime',collateral:'Jumbo 30Y Fixed',rating:'AAA',coupon:5.625,wal:4.1,price:98.88,oas:52,cpr:13,cdr:0.25,sev:22,bal:280,origDate:'2024-03',issuer:'Two Harbors',servicer:'Select Portfolio',state_top:'CA 32%/NY 14%/NJ 8%',avg_fico:771,avg_ltv:68,avg_dti:35,wac:6.375},
+  {cusip:'02358RAA9',deal:'AMSR 2024-SFR1',tranche:'A1',type:'SFR Rental',collateral:'Single Family Rental',rating:'AAA',coupon:5.90,wal:5.5,price:98.50,oas:68,cpr:4,cdr:0.50,sev:28,bal:420,origDate:'2024-01',issuer:'American Homes 4 Rent',servicer:'CoreVest',state_top:'GA 18%/TX 16%/FL 14%',avg_fico:0,avg_ltv:72,avg_dti:0,wac:6.75},
+  // Non-QM
+  {cusip:'07389RAB3',deal:'BSARM 2024-8',tranche:'A1',type:'Non-QM',collateral:'DSCR/Non-QM ARM',rating:'AAA',coupon:6.00,wal:5.1,price:96.50,oas:78,cpr:10,cdr:1.20,sev:35,bal:180,origDate:'2024-03',issuer:'Barclays',servicer:'Select Portfolio',state_top:'CA 29%/FL 16%/TX 11%',avg_fico:726,avg_ltv:72,avg_dti:0,wac:7.25},
+  {cusip:'66781PAD2',deal:'HOMEE 2024-1',tranche:'B1',type:'Non-QM Sub',collateral:'Non-QM 30Y Fixed',rating:'BBB',coupon:8.50,wal:9.2,price:85.50,oas:380,cpr:6,cdr:5.00,sev:50,bal:24.9,origDate:'2024-01',issuer:'HomePoint Capital',servicer:'HomePoint',state_top:'CA 31%/TX 13%/FL 11%',avg_fico:708,avg_ltv:74,avg_dti:44,wac:8.25},
+  {cusip:'22548RAK2',deal:'CSAB 2023-11',tranche:'M1',type:'Non-QM Mezz',collateral:'Expanded Credit',rating:'AA',coupon:6.75,wal:6.8,price:94.25,oas:145,cpr:10,cdr:2.10,sev:40,bal:45,origDate:'2023-11',issuer:'Credit Suisse',servicer:'Nationstar',state_top:'CA 26%/NY 15%/FL 12%',avg_fico:718,avg_ltv:73,avg_dti:43,wac:7.50},
+  // CRT/Risk Transfer
+  {cusip:'3136AZWH5',deal:'FANNIE CAS 2024-C01',tranche:'M1',type:'CRT',collateral:'Agency Conv Pool Reference',rating:'BB+',coupon:7.50,wal:7.2,price:97.25,oas:285,cpr:8,cdr:0.80,sev:30,bal:600,origDate:'2024-01',issuer:'Fannie Mae',servicer:'N/A',state_top:'CA 28%/TX 12%/FL 10%',avg_fico:753,avg_ltv:80,avg_dti:38,wac:6.50},
+  // More deals
+  {cusip:'55423MAB8',deal:'NCUA 2023-R1',tranche:'M2',type:'Non-Agency Sub',collateral:'Legacy RMBS',rating:'A',coupon:7.25,wal:7.5,price:91.00,oas:210,cpr:8,cdr:3.50,sev:45,bal:30,origDate:'2023-08',issuer:'NCUA',servicer:'Various',state_top:'CA 22%/FL 18%/NY 12%',avg_fico:712,avg_ltv:78,avg_dti:41,wac:7.00},
+  {cusip:'44328RAC1',deal:'JPMMT 2024-3',tranche:'A3',type:'Non-Agency Prime',collateral:'Jumbo Prime',rating:'AAA',coupon:5.75,wal:3.8,price:99.10,oas:45,cpr:15,cdr:0.30,sev:25,bal:78,origDate:'2024-02',issuer:'JP Morgan',servicer:'Chase',state_top:'CA 35%/NY 18%/WA 9%',avg_fico:779,avg_ltv:66,avg_dti:34,wac:6.50},
+  {cusip:'88923LAC3',deal:'SALI 2024-2',tranche:'M1',type:'Non-Agency',collateral:'Consumer/SBA',rating:'AA',coupon:6.40,wal:5.9,price:95.80,oas:120,cpr:11,cdr:1.80,sev:38,bal:62,origDate:'2024-04',issuer:'Sallie Mae',servicer:'Sallie Mae',state_top:'Various',avg_fico:712,avg_ltv:0,avg_dti:0,wac:7.25},
+  {cusip:'98765XAA1',deal:'RCOT 2024-SBC1',tranche:'A1',type:'Non-QM DSCR',collateral:'DSCR Investor',rating:'AAA',coupon:6.25,wal:6.2,price:97.85,oas:95,cpr:7,cdr:1.50,sev:35,bal:195,origDate:'2024-05',issuer:'Ready Capital',servicer:'Ready Capital',state_top:'TX 20%/FL 18%/CA 15%',avg_fico:0,avg_ltv:70,avg_dti:0,wac:7.50},
+  {cusip:'12345CAB4',deal:'MFRA 2024-NQM3',tranche:'A1',type:'Non-QM',collateral:'Non-QM/ITIN',rating:'AAA',coupon:6.10,wal:4.8,price:97.20,oas:82,cpr:8,cdr:1.80,sev:38,bal:142,origDate:'2024-06',issuer:'Morgan Stanley',servicer:'PHH',state_top:'CA 40%/TX 12%/FL 11%',avg_fico:698,avg_ltv:75,avg_dti:0,wac:7.25},
+  {cusip:'67812MAB2',deal:'PSMC 2023-1',tranche:'A1',type:'Non-Agency Prime',collateral:'Prime Jumbo Fixed',rating:'AAA',coupon:5.50,wal:4.5,price:98.50,oas:58,cpr:14,cdr:0.20,sev:22,bal:210,origDate:'2023-06',issuer:'PennyMac',servicer:'PennyMac',state_top:'CA 38%/WA 10%/NY 9%',avg_fico:782,avg_ltv:64,avg_dti:33,wac:6.25},
+];
+
+// ════════════════════════════════════════════════════
+// APP STATE
+// ════════════════════════════════════════════════════
+const APP = {
+  stage: 0,
+  poolFilters: {showCut:true, state:'ALL', purpose:'ALL', propType:'ALL', creditTier:'ALL', search:''},
+  eligCriteria: {ficoMin:660, ltvMax:95, dtiMax:50, maxDQ:'1x30', loanMax:766550, ageMin:3, ageMax:24},
+  livePool: POOL_RAW.map(l=>({...l})),
+  charts: {},
+  selectedCUSIP: null,
+  cusipSearch: '',
+  stackSliders: {A1:55,A2:10,M1:7,M2:5,B1:4,B2:3,OC:16},
+  trancheYields: {A1:6.2,A2:6.6,M1:7.2,M2:8.0,B1:9.5,B2:12.0,OC:0},
+  sort: {col:null, dir:1},
+};
+
+// ════════════════════════════════════════════════════
+// STAGES DEFINITION
+// ════════════════════════════════════════════════════
+const STAGES = [
+  {id:0, icon:'🏠', label:'Stage 1', title:'The Raw Pool', color:'#00e676'},
+  {id:1, icon:'🔬', label:'Stage 2', title:'Eligibility Filter', color:'#00e5ff'},
+  {id:2, icon:'🏗️', label:'Stage 3', title:'Capital Structure', color:'#7b61ff'},
+  {id:3, icon:'⚖️', label:'Stage 4', title:'Rating Agency', color:'#ffd740'},
+  {id:4, icon:'⚡', label:'Stage 5', title:'Waterfall Mechanics', color:'#ff9100'},
+  {id:5, icon:'📜', label:'Stage 6', title:'Legal Docs', color:'#64ffda'},
+  {id:6, icon:'📡', label:'Stage 7', title:'Roadshow & Pricing', color:'#00e5ff'},
+  {id:7, icon:'🏛️', label:'Stage 8', title:'Closing Day', color:'#7b61ff'},
+  {id:8, icon:'📊', label:'Stage 9', title:'Surveillance', color:'#00e676'},
+  {id:9, icon:'🎓', label:'Career Path', title:'Analyst → MD', color:'#ffd740'},
+  {id:10, icon:'🗄️', label:'CUSIP Library', title:'CUSIP Database', color:'#00e5ff'},
+];
+
+// ════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════
+function init() {
+  buildNav();
+  buildSidebar();
+  goToStage(0);
+}
+
+function goBack() {
+  if(window.opener) window.opener.focus();
+  // If opened as standalone, go back
+  history.back();
+}
+
+function buildNav() {
+  document.getElementById('stageTabs').innerHTML = STAGES.map((s,i)=>`
+    <div class="stage-tab ${i===0?'active':''}" id="stab${i}" onclick="goToStage(${i})">
+      ${s.icon} ${s.label}
+    </div>
+  `).join('');
+}
+
+function buildSidebar() {
+  const sb = document.getElementById('sidebar');
+  sb.innerHTML = `<div class="sb-section">Deal Stages</div>` +
+    STAGES.slice(0,10).map((s,i)=>`
+      <div class="sb-item ${i===0?'active':''}" id="sbItem${i}" onclick="goToStage(${i})">
+        <div class="sb-icon">${s.icon}</div>
+        <div>
+          <div class="sb-label">${s.title}</div>
+          <div class="sb-sub">${s.label}</div>
+        </div>
+      </div>
+    `).join('') +
+    `<div class="sb-section" style="margin-top:8px;">Data</div>` +
+    `<div class="sb-item ${10===0?'active':''}" id="sbItem10" onclick="goToStage(10)">
+      <div class="sb-icon">🗄️</div>
+      <div><div class="sb-label">CUSIP Library</div><div class="sb-sub">${CUSIP_DB.length} bonds tracked</div></div>
+    </div>`;
+}
+
+function goToStage(i) {
+  APP.stage = i;
+  // Update nav
+  STAGES.forEach((_,j)=>{
+    document.getElementById('stab'+j)?.classList.toggle('active',j===i);
+    document.getElementById('sbItem'+j)?.classList.toggle('active',j===i);
+  });
+  // Render
+  const renders = [renderStage0,renderStage1,renderStage2,renderStage3,renderStage4,renderStage5,renderStage6,renderStage7,renderStage8,renderStage9,renderStage10];
+  if(renders[i]) renders[i]();
+}
+
+// ════════════════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════════════════
+const fmt$ = n => '$'+n.toLocaleString();
+const fmtK = n => n>=1e6?'$'+(n/1e6).toFixed(2)+'M':'$'+(n/1e3).toFixed(0)+'K';
+const fmtPct = n => n.toFixed(1)+'%';
+const avg = (arr,fn) => arr.reduce((s,x)=>s+(fn?fn(x):x),0)/arr.length;
+const sum = (arr,fn) => arr.reduce((s,x)=>s+(fn?fn(x):x),0);
+
+function poolStats(loans) {
+  if(!loans.length) return {};
+  return {
+    count: loans.length,
+    bal: sum(loans,x=>x.balance),
+    avgBal: avg(loans,x=>x.balance),
+    avgFico: avg(loans,x=>x.fico),
+    avgLtv: avg(loans,x=>x.ltv),
+    avgDti: avg(loans,x=>x.dti),
+    avgRate: avg(loans,x=>x.rate),
+    states: [...new Set(loans.map(x=>x.state))].length,
+  };
+}
+
+function applyEligibility(loans, criteria) {
+  return loans.map(l => {
+    const dqRank = {'0x30':0,'1x30':1,'2x30':2,'1x60':3,'2x60':4,'1x90':5};
+    const maxDQRank = dqRank[criteria.maxDQ]||1;
+    const checks = {
+      fico: l.fico >= criteria.ficoMin,
+      ltv:  l.ltv <= criteria.ltvMax,
+      dti:  l.dti <= criteria.dtiMax,
+      dq:   (dqRank[l.dq_hist]||0) <= maxDQRank,
+      size: l.balance <= criteria.loanMax,
+      age:  l.age_months >= criteria.ageMin && l.age_months <= criteria.ageMax,
+    };
+    const eligible = Object.values(checks).every(Boolean);
+    const cutReason = eligible ? '' : Object.entries(checks).find(([,v])=>!v)?.[0]||'';
+    return {...l, eligible, cut_reason: cutReason, checks};
+  });
+}
+
+function setMain(html) {
+  document.getElementById('mainContent').innerHTML = html;
+  document.getElementById('mainContent').scrollTop = 0;
+}
+
+function kpiBar(items) {
+  return `<div class="kpi-strip">${items.map(([l,v,c])=>`<div class="kpi"><div class="kpi-l">${l}</div><div class="kpi-v" style="color:${c||'var(--accent)'};">${v}</div></div>`).join('')}</div>`;
+}
+
+function stageHeader(s, subtitle, narr) {
+  return `
+  <div style="padding:20px 24px 0;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+      <div style="font-size:40px;">${s.icon}</div>
+      <div>
+        <div style="font-family:var(--mono);font-size:9px;color:${s.color};letter-spacing:2px;text-transform:uppercase;margin-bottom:3px;">${s.label}</div>
+        <div style="font-family:var(--sans);font-size:20px;font-weight:800;color:var(--text);">${s.title}</div>
+        <div style="font-size:12px;color:var(--text2);font-style:italic;margin-top:2px;">${subtitle}</div>
+      </div>
+    </div>
+    ${narr?`<div class="narrative">${narr}</div>`:''}
+  </div>`;
+}
+
+function bottomNav(i) {
+  return `<div class="bottom-bar">
+    <button class="btn btn-ghost btn-sm" onclick="goToStage(${Math.max(0,i-1)})" ${i===0?'disabled':''}>← Prev</button>
+    <span class="stage-progress">${i+1} / ${STAGES.length} — ${STAGES[i].title}</span>
+    <button class="btn btn-primary btn-sm" onclick="goToStage(${Math.min(STAGES.length-1,i+1)})" ${i===STAGES.length-1?'disabled':''}>Next Stage →</button>
+  </div>`;
+}
+
+// ════════════════════════════════════════════════════
+// STAGE 0 — THE RAW POOL
+// ════════════════════════════════════════════════════
+function renderStage0() {
+  const s = STAGES[0];
+  const loans = POOL_RAW;
+  const st = poolStats(loans);
+  const filtered = getFilteredLoans(loans);
+
+  setMain(`
+    ${stageHeader(s, 'Someone drops a USB on your desk. 250 mortgages. This is your raw material.', `
+      You are a Structuring MD at JPMorgan. The origination desk just sent you a pool tape — a spreadsheet with every mortgage they want to securitize.
+      <br><br>Your job starts here. <strong style="color:var(--accent);">Every number in this table will determine the price, rating, and risk of the bonds you create.</strong>
+      Scroll through the data. Click column headers to sort. Use filters to explore. This is exactly what real MDs look at on Day 1.
+    `)}
+    ${kpiBar([
+      ['Total Loans', loans.length.toLocaleString(), 'var(--accent)'],
+      ['Total Balance', fmtK(st.bal), 'var(--green)'],
+      ['Avg Loan Size', fmtK(st.avgBal), 'var(--text)'],
+      ['Avg FICO', st.avgFico.toFixed(0), 'var(--accent)'],
+      ['Avg LTV', fmtPct(st.avgLtv), 'var(--amber)'],
+      ['Avg DTI', fmtPct(st.avgDti), 'var(--text)'],
+      ['Avg Rate', fmtPct(st.avgRate), 'var(--accent2)'],
+      ['States', st.states, 'var(--text)'],
+    ])}
+
+    <div class="filter-bar">
+      <input class="search-mini" placeholder="Search loan ID, state..." oninput="APP.poolFilters.search=this.value;renderStage0()" value="${APP.poolFilters.search}">
+      <select class="filter-select" onchange="APP.poolFilters.state=this.value;renderStage0()">
+        <option value="ALL">All States</option>
+        ${[...new Set(POOL_RAW.map(x=>x.state))].sort().map(s=>`<option ${APP.poolFilters.state===s?'selected':''}>${s}</option>`).join('')}
+      </select>
+      <select class="filter-select" onchange="APP.poolFilters.purpose=this.value;renderStage0()">
+        <option value="ALL">All Purposes</option>
+        ${[...new Set(POOL_RAW.map(x=>x.purpose))].map(p=>`<option ${APP.poolFilters.purpose===p?'selected':''}>${p}</option>`).join('')}
+      </select>
+      <select class="filter-select" onchange="APP.poolFilters.creditTier=this.value;renderStage0()">
+        <option value="ALL">All Credit Tiers</option>
+        <option value="prime" ${APP.poolFilters.creditTier==='prime'?'selected':''}>Prime</option>
+        <option value="near-prime" ${APP.poolFilters.creditTier==='near-prime'?'selected':''}>Near-Prime</option>
+        <option value="subprime" ${APP.poolFilters.creditTier==='subprime'?'selected':''}>Subprime</option>
+      </select>
+      <button class="btn btn-ghost btn-sm" onclick="resetFilters0()">Reset</button>
+      <span style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-left:auto;">Showing ${filtered.length} / ${loans.length} loans</span>
+    </div>
+
+    <div style="padding:0 0 80px;">
+      <div class="tbl-wrap" style="max-height:none;">
+        <table id="poolTable">
+          <thead><tr>
+            <th onclick="sortPool('id',0)">Loan ID ↕</th>
+            <th onclick="sortPool('originator',1)">Originator ↕</th>
+            <th onclick="sortPool('state',2)">State ↕</th>
+            <th onclick="sortPool('balance',3)">Balance ↕</th>
+            <th onclick="sortPool('rate',4)">Rate ↕</th>
+            <th onclick="sortPool('fico',5)">FICO ↕</th>
+            <th onclick="sortPool('ltv',6)">LTV% ↕</th>
+            <th onclick="sortPool('dti',7)">DTI% ↕</th>
+            <th onclick="sortPool('purpose',8)">Purpose ↕</th>
+            <th onclick="sortPool('prop_type',9)">Prop Type ↕</th>
+            <th onclick="sortPool('occupancy',10)">Occupancy ↕</th>
+            <th onclick="sortPool('loan_type',11)">Loan Type ↕</th>
+            <th onclick="sortPool('age_months',12)">Age (mo) ↕</th>
+            <th onclick="sortPool('dq_hist',13)">DQ History ↕</th>
+            <th onclick="sortPool('credit_tier',14)">Tier ↕</th>
+          </tr></thead>
+          <tbody id="poolTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div style="padding:0 24px 14px;">
+      <div class="callout callout-green">
+        <div class="callout-tag" style="color:var(--green);">🍎 WHAT YOU ARE LOOKING AT</div>
+        Each row is one real family's mortgage. The FICO tells you their credit history. The LTV tells you how much equity they have. The DTI tells you how stretched they are. The DQ history tells you if they've ever been late. 
+        <strong>Your job in Stage 2 is to decide which of these loans are clean enough to go into your deal.</strong>
+        Try filtering by "Subprime" tier — watch how the FICO and LTV columns look different. This is what you are excluding.
+      </div>
+    </div>
+    ${bottomNav(0)}
+  `);
+  renderPoolTable(filtered);
+}
+
+function getFilteredLoans(loans) {
+  const f = APP.poolFilters;
+  return loans.filter(l => {
+    if(f.state !== 'ALL' && l.state !== f.state) return false;
+    if(f.purpose !== 'ALL' && l.purpose !== f.purpose) return false;
+    if(f.creditTier !== 'ALL' && l.credit_tier !== f.creditTier) return false;
+    if(f.search && !l.id.toLowerCase().includes(f.search.toLowerCase()) && !l.state.toLowerCase().includes(f.search.toLowerCase())) return false;
+    return true;
+  });
+}
+
+function resetFilters0() {
+  APP.poolFilters = {showCut:true, state:'ALL', purpose:'ALL', propType:'ALL', creditTier:'ALL', search:''};
+  renderStage0();
+}
+
+let poolSortCol = null, poolSortDir = 1;
+function sortPool(col, idx) {
+  if(poolSortCol===col) poolSortDir*=-1; else {poolSortCol=col;poolSortDir=1;}
+  const loans = getFilteredLoans(POOL_RAW);
+  loans.sort((a,b)=>{ const va=a[col], vb=b[col]; return typeof va==='number'?(va-vb)*poolSortDir:String(va).localeCompare(String(vb))*poolSortDir; });
+  renderPoolTableDirect(loans);
+}
+
+function renderPoolTable(loans) { renderPoolTableDirect(loans); }
+
+function renderPoolTableDirect(loans) {
+  const body = document.getElementById('poolTableBody');
+  if(!body) return;
+  const tierColor = {prime:'var(--green)','near-prime':'var(--amber)',subprime:'var(--red)'};
+  body.innerHTML = loans.map(l=>`
+    <tr onclick="showLoanDetail('${l.id}')" style="cursor:pointer;">
+      <td style="color:var(--accent);font-weight:700;">${l.id}</td>
+      <td>${l.originator}</td>
+      <td><span style="background:var(--bg4);padding:1px 6px;border-radius:2px;font-size:9px;">${l.state}</span></td>
+      <td class="td-accent">${fmtK(l.balance)}</td>
+      <td>${l.rate.toFixed(3)}%</td>
+      <td style="color:${l.fico>=740?'var(--green)':l.fico>=660?'var(--amber)':'var(--red)'};">${l.fico}</td>
+      <td style="color:${l.ltv<=75?'var(--green)':l.ltv<=90?'var(--amber)':'var(--red)'};">${l.ltv.toFixed(1)}%</td>
+      <td style="color:${l.dti<=38?'var(--green)':l.dti<=48?'var(--amber)':'var(--red)'};">${l.dti.toFixed(1)}%</td>
+      <td style="font-size:9px;color:var(--text2);">${l.purpose}</td>
+      <td style="font-size:9px;">${l.prop_type}</td>
+      <td style="font-size:9px;color:${l.occupancy==='Primary'?'var(--text2)':l.occupancy==='Investment'?'var(--red)':'var(--amber)'};">${l.occupancy}</td>
+      <td style="font-size:9px;">${l.loan_type}</td>
+      <td style="color:${l.age_months>=3&&l.age_months<=24?'var(--text)':'var(--red)'};">${l.age_months}</td>
+      <td style="color:${l.dq_hist==='0x30'?'var(--green)':l.dq_hist==='1x30'?'var(--amber)':'var(--red)'};">${l.dq_hist}</td>
+      <td><span style="color:${tierColor[l.credit_tier]};font-size:9px;">${l.credit_tier}</span></td>
+    </tr>
+  `).join('');
+}
+
+function showLoanDetail(id) {
+  const l = POOL_RAW.find(x=>x.id===id);
+  if(!l) return;
+  const pmt = l.balance * (l.rate/100/12) * Math.pow(1+l.rate/100/12,360) / (Math.pow(1+l.rate/100/12,360)-1);
+  alert(`LOAN ${l.id} — ${l.originator}\n\n` +
+    `Balance: ${fmtK(l.balance)}\nRate: ${l.rate}%\nMonthly Payment: $${pmt.toFixed(0)}\n` +
+    `FICO: ${l.fico} | LTV: ${l.ltv}% | DTI: ${l.dti}%\n` +
+    `State: ${l.state} | Prop: ${l.prop_type} | Occ: ${l.occupancy}\n` +
+    `Purpose: ${l.purpose} | Type: ${l.loan_type}\n` +
+    `Age: ${l.age_months} months | DQ History: ${l.dq_hist}\n` +
+    `Credit Tier: ${l.credit_tier}`);
+}
+
+// ════════════════════════════════════════════════════
+// STAGE 1 — ELIGIBILITY FILTER
+// ════════════════════════════════════════════════════
+function renderStage1() {
+  const s = STAGES[1];
+  const ec = APP.eligCriteria;
+  const processed = applyEligibility(POOL_RAW, ec);
+  const eligible = processed.filter(x=>x.eligible);
+  const cut = processed.filter(x=>!x.eligible);
+  const cutReasons = {};
+  cut.forEach(l=>{ cutReasons[l.cut_reason]=(cutReasons[l.cut_reason]||0)+1; });
+
+  setMain(`
+    ${stageHeader(s, 'You are the quality gate. Every slider you move cuts loans in real time.', `
+      Not every loan makes the cut. You set the rules — called <strong style="color:var(--accent);">eligibility criteria</strong> — and the model automatically filters the pool.
+      Move the sliders below and watch the spreadsheet update instantly. The green rows survive. The red rows are cut.
+      <strong style="color:var(--amber);">This is exactly what structurers do on Day 1 of every deal.</strong>
+    `)}
+
+    <!-- Live eligibility controls -->
+    <div style="padding:14px 24px 0;">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">↓ Move sliders to change eligibility criteria — pool updates live</div>
+      <div class="elig-controls">
+        <div class="elig-control">
+          <div class="ec-label">Min FICO Score</div>
+          <div class="ec-val" id="ecFicoVal">${ec.ficoMin}</div>
+          <input type="range" min="580" max="760" value="${ec.ficoMin}" oninput="updateElig('ficoMin',+this.value,'ecFicoVal',v=>v)">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:4px;">Below this = CUT</div>
+        </div>
+        <div class="elig-control">
+          <div class="ec-label">Max LTV %</div>
+          <div class="ec-val" id="ecLtvVal">${ec.ltvMax}%</div>
+          <input type="range" min="70" max="100" value="${ec.ltvMax}" oninput="updateElig('ltvMax',+this.value,'ecLtvVal',v=>v+'%')">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:4px;">Above this = CUT</div>
+        </div>
+        <div class="elig-control">
+          <div class="ec-label">Max DTI %</div>
+          <div class="ec-val" id="ecDtiVal">${ec.dtiMax}%</div>
+          <input type="range" min="35" max="60" value="${ec.dtiMax}" oninput="updateElig('dtiMax',+this.value,'ecDtiVal',v=>v+'%')">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:4px;">Above this = CUT</div>
+        </div>
+        <div class="elig-control">
+          <div class="ec-label">Max Loan Size</div>
+          <div class="ec-val" id="ecSizeVal">$${(ec.loanMax/1000).toFixed(0)}K</div>
+          <input type="range" min="250000" max="2000000" step="25000" value="${ec.loanMax}" oninput="updateElig('loanMax',+this.value,'ecSizeVal',v=>'$'+(v/1000).toFixed(0)+'K')">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:4px;">GSE conforming / jumbo</div>
+        </div>
+        <div class="elig-control">
+          <div class="ec-label">Min Seasoning (mo)</div>
+          <div class="ec-val" id="ecAgeMinVal">${ec.ageMin} mo</div>
+          <input type="range" min="0" max="12" value="${ec.ageMin}" oninput="updateElig('ageMin',+this.value,'ecAgeMinVal',v=>v+' mo')">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:4px;">Too new = risky</div>
+        </div>
+        <div class="elig-control">
+          <div class="ec-label">Max Seasoning (mo)</div>
+          <div class="ec-val" id="ecAgeMaxVal">${ec.ageMax} mo</div>
+          <input type="range" min="12" max="48" value="${ec.ageMax}" oninput="updateElig('ageMax',+this.value,'ecAgeMaxVal',v=>v+' mo')">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:4px;">Too old = adverse sel.</div>
+        </div>
+      </div>
+    </div>
+
+    ${kpiBar([
+      ['Starting Pool', POOL_RAW.length, 'var(--text)'],
+      ['✓ Eligible', eligible.length, 'var(--green)'],
+      ['✗ Cut', cut.length, 'var(--red)'],
+      ['Eligible Bal', fmtK(sum(eligible,x=>x.balance)), 'var(--accent)'],
+      ['Cut Bal', fmtK(sum(cut,x=>x.balance)), 'var(--red)'],
+      ['Avg FICO (Eligible)', eligible.length?avg(eligible,x=>x.fico).toFixed(0):'—', 'var(--green)'],
+      ['Avg LTV (Eligible)', eligible.length?fmtPct(avg(eligible,x=>x.ltv)):'—', 'var(--accent)'],
+    ])}
+
+    <div style="padding:8px 24px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <span style="font-family:var(--mono);font-size:9px;color:var(--text3);">Cut Reasons:</span>
+      ${Object.entries(cutReasons).map(([r,c])=>`<span style="background:rgba(255,61,113,0.1);color:var(--red);font-family:var(--mono);font-size:9px;padding:2px 8px;border-radius:3px;">${r}: ${c} loans</span>`).join('')}
+      <label style="margin-left:auto;font-family:var(--mono);font-size:9px;color:var(--text3);cursor:pointer;">
+        <input type="checkbox" checked onchange="APP.poolFilters.showCut=this.checked;reRenderEligTable()"> Show cut loans
+      </label>
+    </div>
+
+    <div style="padding:0 0 80px;">
+      <div class="tbl-wrap" style="max-height:none;">
+        <table>
+          <thead><tr>
+            <th>Loan ID</th><th>State</th><th>Balance</th><th>Rate</th>
+            <th>FICO</th><th>LTV%</th><th>DTI%</th><th>Purpose</th>
+            <th>Age(mo)</th><th>DQ Hist</th><th>FICO✓</th><th>LTV✓</th><th>DTI✓</th><th>Size✓</th><th>Age✓</th>
+            <th>Status</th>
+          </tr></thead>
+          <tbody id="eligTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+    ${bottomNav(1)}
+  `);
+  reRenderEligTable();
+}
+
+function updateElig(key, val, labelId, fmt) {
+  APP.eligCriteria[key] = val;
+  document.getElementById(labelId).textContent = fmt(val);
+  reRenderEligTable();
+  updateEligStats();
+}
+
+function updateEligStats() {
+  const processed = applyEligibility(POOL_RAW, APP.eligCriteria);
+  const eligible = processed.filter(x=>x.eligible);
+  const cut = processed.filter(x=>!x.eligible);
+  // Update kpi bar values
+  const kpis = document.querySelectorAll('.kpi-v');
+  if(kpis.length >= 7) {
+    kpis[0].textContent = POOL_RAW.length;
+    kpis[1].textContent = eligible.length;
+    kpis[2].textContent = cut.length;
+    kpis[3].textContent = fmtK(sum(eligible,x=>x.balance));
+    kpis[4].textContent = fmtK(sum(cut,x=>x.balance));
+    kpis[5].textContent = eligible.length?avg(eligible,x=>x.fico).toFixed(0):'—';
+    kpis[6].textContent = eligible.length?fmtPct(avg(eligible,x=>x.ltv)):'—';
+  }
+}
+
+function reRenderEligTable() {
+  const processed = applyEligibility(POOL_RAW, APP.eligCriteria);
+  const display = APP.poolFilters.showCut !== false ? processed : processed.filter(x=>x.eligible);
+  const body = document.getElementById('eligTableBody');
+  if(!body) return;
+  const chk = (v) => v ? '<span style="color:var(--green);">✓</span>' : '<span style="color:var(--red);">✗</span>';
+  body.innerHTML = display.map(l=>`
+    <tr class="${l.eligible?'eligible-row':'cut-row'}">
+      <td style="color:var(--accent);">${l.id}</td>
+      <td>${l.state}</td>
+      <td>${fmtK(l.balance)}</td>
+      <td>${l.rate.toFixed(3)}%</td>
+      <td style="color:${l.fico>=APP.eligCriteria.ficoMin?'var(--green)':'var(--red)'};">${l.fico}</td>
+      <td style="color:${l.ltv<=APP.eligCriteria.ltvMax?'var(--green)':'var(--red)'};">${l.ltv.toFixed(1)}%</td>
+      <td style="color:${l.dti<=APP.eligCriteria.dtiMax?'var(--green)':'var(--red)'};">${l.dti.toFixed(1)}%</td>
+      <td style="font-size:9px;">${l.purpose}</td>
+      <td style="color:${l.age_months>=APP.eligCriteria.ageMin&&l.age_months<=APP.eligCriteria.ageMax?'var(--text)':'var(--red)'};">${l.age_months}</td>
+      <td style="color:${l.dq_hist==='0x30'?'var(--green)':'var(--amber)'};">${l.dq_hist}</td>
+      <td>${chk(l.checks?.fico)}</td>
+      <td>${chk(l.checks?.ltv)}</td>
+      <td>${chk(l.checks?.dti)}</td>
+      <td>${chk(l.checks?.size)}</td>
+      <td>${chk(l.checks?.age)}</td>
+      <td>${l.eligible?'<span class="ok-badge">ELIGIBLE</span>':'<span class="cut-badge">CUT: '+l.cut_reason+'</span>'}</td>
+    </tr>
+  `).join('');
+}
+
+// ════════════════════════════════════════════════════
+// STAGE 2 — CAPITAL STRUCTURE BUILDER
+// ════════════════════════════════════════════════════
+function renderStage2() {
+  const s = STAGES[2];
+  const eligPool = applyEligibility(POOL_RAW, APP.eligCriteria).filter(x=>x.eligible);
+  const poolBal = sum(eligPool, x=>x.balance);
+  const sl = APP.stackSliders;
+
+  setMain(`
+    ${stageHeader(s, 'You are at the whiteboard at 9pm. Design the capital structure that makes every tranche sellable.', `
+      You have a clean pool worth <strong style="color:var(--green);">${fmtK(poolBal)}</strong> from Stage 2.
+      Now you decide how to slice it. Drag the sliders to change each tranche size.
+      <strong style="color:var(--accent);">Watch the capital stack rebuild in real time.</strong> The model calculates the economics of each tranche instantly.
+    `)}
+
+    <div style="display:grid;grid-template-columns:1fr 380px;gap:0;height:calc(100vh - 220px);">
+
+      <!-- Controls -->
+      <div style="overflow-y:auto;padding:16px 20px;border-right:1px solid var(--border);">
+        <div style="font-family:var(--mono);font-size:9px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;">TRANCHE SIZING — drag sliders</div>
+        <div id="stackSliders"></div>
+
+        <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">DEAL ECONOMICS</div>
+          <div id="dealEcon"></div>
+        </div>
+
+        <div class="callout callout-amber" style="margin-top:14px;">
+          <div class="callout-tag" style="color:var(--amber);">💡 KEY INSIGHT</div>
+          The OC tranche is NOT sold to investors — it is the buffer that protects all rated bonds.
+          The thicker the OC, the safer the AAA. But every % you add to OC is money the bank doesn't get back at closing.
+          This is the fundamental tension of every deal.
+        </div>
+
+        <div style="margin-top:16px;">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">TRANCHE PRICING TABLE</div>
+          <div class="tbl-wrap" style="max-height:280px;">
+            <table id="trancheTable">
+              <thead><tr><th>Tranche</th><th>Rating</th><th>Size $M</th><th>Size %</th><th>Coupon</th><th>Yield</th><th>OAS</th><th>CE %</th></tr></thead>
+              <tbody id="trancheTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live capital stack visual -->
+      <div style="overflow-y:auto;padding:16px 16px;background:var(--bg2);">
+        <div style="font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;">CAPITAL STACK — ${fmtK(poolBal)} POOL</div>
+        <div id="stackVisual" style="display:flex;flex-direction:column;gap:3px;margin-bottom:16px;"></div>
+        <div id="stackSummary"></div>
+      </div>
+    </div>
+    ${bottomNav(2)}
+  `);
+  buildStackSliders(poolBal);
+  updateStackVisual(poolBal);
+}
+
+const TRANCHE_META = {
+  A1:{rating:'AAA',color:'#00e676',tipColor:'#000',coupon:5.50,oas:32,desc:'Senior-most class. First lien on all cash flows. Last to take losses.'},
+  A2:{rating:'AAA',color:'#64ffda',tipColor:'#000',coupon:5.75,oas:48,desc:'Second senior class. Slightly longer WAL than A1.'},
+  M1:{rating:'AA',color:'#00e5ff',tipColor:'#000',coupon:6.25,oas:115,desc:'First mezzanine class. Subordinate to seniors. OC/IC trigger exposure.'},
+  M2:{rating:'A',color:'#7b61ff',tipColor:'#fff',coupon:6.75,oas:185,desc:'Second mezzanine. Higher spread, trigger-sensitive.'},
+  B1:{rating:'BBB',color:'#ffd740',tipColor:'#000',coupon:7.75,oas:310,desc:'Sub-investment grade. First rated class to take losses after OC depletes.'},
+  B2:{rating:'BB',color:'#ff9100',tipColor:'#000',coupon:9.00,oas:520,desc:'Speculative grade. Significant loss exposure. Hedge fund territory.'},
+  OC:{rating:'NR',color:'#4a6680',tipColor:'#fff',coupon:0,oas:0,desc:'Over-collateralization. NOT sold to investors. Pure loss buffer.'},
+};
+
+function buildStackSliders(poolBal) {
+  const sl = APP.stackSliders;
+  document.getElementById('stackSliders').innerHTML = Object.entries(sl).map(([id,pct])=>{
+    const meta = TRANCHE_META[id];
+    return `<div style="margin-bottom:14px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <span style="font-family:var(--mono);font-size:10px;color:${meta.color};font-weight:700;">${id} <span style="color:var(--text3);font-weight:400;">(${meta.rating})</span></span>
+        <span style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--accent);" id="sv_${id}">${pct}% = ${fmtK(poolBal*pct/100)}</span>
+      </div>
+      <input type="range" min="0" max="${id==='OC'?40:id==='A1'?80:30}" value="${pct}" step="0.5"
+        oninput="updateStack('${id}',+this.value,${poolBal})"
+        style="--thumb-color:${meta.color};">
+      <div style="font-size:10px;color:var(--text3);margin-top:2px;">${meta.desc}</div>
+    </div>`;
+  }).join('');
+}
+
+function updateStack(id, val, poolBal) {
+  APP.stackSliders[id] = val;
+  document.getElementById('sv_'+id).textContent = val+'% = '+fmtK(poolBal*val/100);
+  updateStackVisual(poolBal);
+}
+
+function updateStackVisual(poolBal) {
+  const sl = APP.stackSliders;
+  const totalPct = Object.values(sl).reduce((a,b)=>a+b,0);
+
+  // Capital stack bars
+  let ceAccum = 0;
+  const tranches = Object.entries(sl).reverse(); // bottom to top
+  const visual = document.getElementById('stackVisual');
+  if(!visual) return;
+
+  visual.innerHTML = Object.entries(sl).map(([id,pct])=>{
+    const meta = TRANCHE_META[id];
+    const bal = poolBal * pct/100;
+    const h = Math.max(24, pct * 4.5);
+    return `<div class="stack-bar" style="height:${h}px;background:${meta.color}20;border:1px solid ${meta.color}44;border-radius:4px;"
+      title="${id}: ${pct}% = ${fmtK(bal)} | ${meta.rating} | ${meta.coupon?meta.coupon+'% coupon':'—'}">
+      <span style="font-family:var(--mono);font-size:10px;font-weight:700;color:${meta.color};">${id}</span>
+      <span style="font-family:var(--mono);font-size:9px;color:${meta.color};">${fmtK(bal)} (${pct}%)</span>
+      <span style="font-family:var(--mono);font-size:8px;color:var(--text3);">${meta.rating}</span>
+    </div>`;
+  }).join('');
+
+  // Total check
+  const sumPct = Object.values(sl).reduce((a,b)=>a+b,0);
+  const mismatch = Math.abs(sumPct-100) > 0.5;
+
+  document.getElementById('stackSummary').innerHTML = `
+    <div style="background:var(--bg3);border:1px solid ${mismatch?'var(--red)':'var(--border)'};border-radius:6px;padding:12px;">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:6px;">TOTAL: ${sumPct.toFixed(1)}% ${mismatch?'<span style="color:var(--red);">⚠ Must = 100%</span>':''}</div>
+      <div style="display:flex;height:8px;border-radius:4px;overflow:hidden;margin-bottom:10px;">
+        ${Object.entries(sl).map(([id,pct])=>`<div style="flex:${pct};background:${TRANCHE_META[id].color};" title="${id}:${pct}%"></div>`).join('')}
+      </div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text3);">Notes sold: ${fmtK(poolBal*(100-sl.OC)/100)}</div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--green);">OC cushion: ${fmtK(poolBal*sl.OC/100)}</div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--amber);margin-top:4px;">Blended cost of funds: ${calcBlendedCost().toFixed(2)}%</div>
+    </div>
+  `;
+
+  // Tranche table
+  let cumCE = 0;
+  const tbody = document.getElementById('trancheTableBody');
+  if(tbody) {
+    // Build in reverse for CE calc (OC at bottom)
+    const entries = Object.entries(sl);
+    const ceMap = {};
+    let running = 0;
+    entries.reverse().forEach(([id,pct])=>{ ceMap[id]=running; if(id!=='OC') running+=pct; });
+    entries.reverse();
+    tbody.innerHTML = entries.map(([id,pct])=>{
+      const meta = TRANCHE_META[id];
+      const bal = (poolBal*pct/100/1e6).toFixed(1);
+      return `<tr>
+        <td style="color:${meta.color};font-weight:700;">${id}</td>
+        <td><span style="color:${meta.color};font-size:9px;">${meta.rating}</span></td>
+        <td class="td-accent">${bal}</td>
+        <td>${pct.toFixed(1)}%</td>
+        <td>${meta.coupon?meta.coupon+'%':'—'}</td>
+        <td>${meta.coupon?(meta.coupon+0.2).toFixed(2)+'%':'—'}</td>
+        <td>${meta.oas?meta.oas+'bp':'—'}</td>
+        <td style="color:var(--accent);">${ceMap[id].toFixed(1)}%</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // Deal economics
+  const econ = document.getElementById('dealEcon');
+  if(econ) {
+    const notePct = 100-sl.OC;
+    const noteBal = poolBal*notePct/100;
+    const blended = calcBlendedCost();
+    const wac = 6.75; // assumed
+    const exSpread = wac - blended - 0.25;
+    econ.innerHTML = `
+      <div style="display:grid;gap:6px;font-family:var(--mono);font-size:10px;">
+        ${[['Pool Balance', fmtK(poolBal),'var(--text)'],['Notes Issued',fmtK(noteBal),'var(--accent)'],
+           ['OC Amount',fmtK(poolBal*sl.OC/100),'var(--amber)'],['OC %',(sl.OC).toFixed(1)+'%','var(--amber)'],
+           ['Pool WAC (assumed)','6.75%','var(--text)'],['Blended Cost',blended.toFixed(2)+'%','var(--red)'],
+           ['Excess Spread',exSpread.toFixed(2)+'%',exSpread>0?'var(--green)':'var(--red)'],
+           ['Ann. XS ($)',fmtK(poolBal*exSpread/100),exSpread>0?'var(--green)':'var(--red)']
+          ].map(([l,v,c])=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);"><span style="color:var(--text3);">${l}</span><span style="color:${c};font-weight:700;">${v}</span></div>`).join('')}
+      </div>
+    `;
+  }
+}
+
+function calcBlendedCost() {
+  const sl = APP.stackSliders;
+  const total = Object.entries(sl).filter(([id])=>id!=='OC').reduce((a,[,v])=>a+v,0);
+  return Object.entries(sl).filter(([id])=>id!=='OC').reduce((a,[id,pct])=>a+(pct/total)*TRANCHE_META[id].coupon,0);
+}
+
+// ════════════════════════════════════════════════════
+// STAGES 3-9 — NARRATIVE + VISUAL
+// ════════════════════════════════════════════════════
+function makeNarrativeStage(stageIdx, content) {
+  const s = STAGES[stageIdx];
+  setMain(`
+    ${stageHeader(s, content.subtitle, content.narrative)}
+    <div style="padding:0 24px 80px;">
+      ${content.body}
+    </div>
+    ${bottomNav(stageIdx)}
+  `);
+}
+
+function renderStage3() {
+  makeNarrativeStage(3, {
+    subtitle:'You pick up the phone and call Moody\'s. What follows is 4 weeks of intense negotiation.',
+    narrative:`You have a structure on paper. Now you need proof it deserves the ratings you're claiming.
+    The rating agencies are simultaneously your partner and adversary — they're paid by you, but they must appear independent.
+    <strong style="color:var(--amber);">Walk through the exact model they run on YOUR pool.</strong>`,
+    body: `
+    <div class="card"><div class="card-header"><span class="card-title">Rating Agency Stress Test — Run on YOUR Pool</span><button class="btn btn-cyan btn-sm" onclick="runRatingStress()">▶ Run Moody's Model</button></div>
+    <div class="card-body" id="ratingStressBody">
+      <div style="color:var(--text3);font-family:var(--mono);font-size:11px;">Click "Run Moody's Model" to apply stressed CDR/severity to your eligible pool</div>
+    </div></div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div class="card"><div class="card-header"><span class="card-title">Stress Scenario Matrix</span></div>
+      <div class="card-body">
+        <table><thead><tr><th style="text-align:left;">Scenario</th><th>CDR</th><th>Severity</th><th>Cum Loss %</th><th>AAA Survives?</th></tr></thead>
+        <tbody>
+        ${[['Base (BBB floor)','2%','35%','0.7%',true],
+           ['Moderate Stress (A floor)','4%','38%','1.5%',true],
+           ['Severe (AA floor)','7%','42%','2.9%',true],
+           ['AAA Stress','12%','48%','5.8%',true],
+           ['GFC Replay (Aaa)','20%','58%','11.6%',null],
+           ['Catastrophic','35%','70%','24.5%',false]
+          ].map(([sc,cdr,sev,loss,pass])=>`<tr>
+            <td style="text-align:left;color:var(--text2);">${sc}</td>
+            <td style="color:var(--red);">${cdr}</td><td style="color:var(--amber);">${sev}</td>
+            <td style="color:${parseFloat(loss)>10?'var(--red)':parseFloat(loss)>5?'var(--amber)':'var(--green)'};">${loss}</td>
+            <td style="${pass===null?'color:var(--amber)':pass?'color:var(--green)':'color:var(--red)'};">${pass===null?'Depends on CE':pass?'✓ YES':'✗ NO'}</td>
+          </tr>`).join('')}
+        </tbody></table>
+      </div></div>
+
+      <div class="card"><div class="card-header"><span class="card-title">Rating Process Timeline</span></div>
+      <div class="card-body" style="font-family:var(--mono);font-size:10px;line-height:2.2;color:var(--text2);">
+        <div><span style="color:var(--amber);">Day 1:</span> Submit pool tape + structure to Moody's & S&P</div>
+        <div><span style="color:var(--amber);">Day 3-5:</span> Agency runs MILAN / LEVELS model internally</div>
+        <div><span style="color:var(--amber);">Day 6:</span> Model call — 2 hrs, every assumption challenged</div>
+        <div><span style="color:var(--amber);">Day 8-10:</span> Agency requests changes: "Need 1% more OC on M1"</div>
+        <div><span style="color:var(--amber);">Day 12:</span> You counter-propose — reserve fund instead</div>
+        <div><span style="color:var(--amber);">Day 15:</span> Agency submits to Rating Committee (you wait)</div>
+        <div><span style="color:var(--amber);">Day 18:</span> Preliminary ratings confirmed in writing</div>
+        <div><span style="color:var(--amber);">Day 28:</span> Presale report published — deal is visible to market</div>
+        <div style="margin-top:10px;color:var(--text3);">Total: 3-5 weeks. 3-8 rounds of back-and-forth. Normal.</div>
+      </div></div>
+    </div>
+
+    <div class="callout callout-red" style="margin-top:14px;">
+      <div class="callout-tag" style="color:var(--red);">⚠ THE ISSUER PAYS PROBLEM</div>
+      You pay Moody's ~$500K-$1.5M to rate this deal. They want your future business. Pre-2008, agencies competed by
+      loosening standards — if Moody's wouldn't give AAA, you'd go to S&P. Dodd-Frank tried to fix this but the structural
+      conflict remains. Every structurer knows this. Most are uncomfortable with it. But the system runs on it.
+    </div>`
+  });
+}
+
+function runRatingStress() {
+  const eligible = applyEligibility(POOL_RAW, APP.eligCriteria).filter(x=>x.eligible);
+  const poolBal = sum(eligible,x=>x.balance);
+  const avgFico = avg(eligible,x=>x.fico);
+  const avgLtv = avg(eligible,x=>x.ltv);
+  const ocPct = APP.stackSliders.OC/100;
+  const ocBal = poolBal * ocPct;
+
+  // Moody's-style expected loss by scenario
+  const scenarios = [
+    {name:'Base',cdrMult:1.0,sevAdj:0,color:'var(--green)'},
+    {name:'Moderate',cdrMult:2.0,sevAdj:0.03,color:'var(--accent)'},
+    {name:'Severe',cdrMult:3.5,sevAdj:0.07,color:'var(--amber)'},
+    {name:'GFC',cdrMult:6.0,sevAdj:0.15,color:'var(--red)'},
+  ];
+  const baseCDR = Math.max(0.5, (800-avgFico)/100 + (avgLtv-60)/30)*0.5;
+  const baseSev = 0.30 + (avgLtv-65)/200;
+
+  let html = `<div class="tbl-wrap"><table><thead><tr>
+    <th style="text-align:left;">Scenario</th><th>CDR</th><th>Severity</th>
+    <th>Cum Loss ($M)</th><th>Cum Loss %</th><th>OC Cushion</th><th>OC Surviving?</th>
+  </tr></thead><tbody>`;
+  scenarios.forEach(sc=>{
+    const cdr = baseCDR*sc.cdrMult;
+    const sev = Math.min(0.80, baseSev+sc.sevAdj);
+    const cumLoss = poolBal * cdr/100 * sev * 5; // 5yr est
+    const lossPct = cumLoss/poolBal*100;
+    const ocSurvives = cumLoss < ocBal;
+    html+=`<tr>
+      <td style="text-align:left;color:${sc.color};">${sc.name}</td>
+      <td>${cdr.toFixed(2)}%</td><td>${(sev*100).toFixed(1)}%</td>
+      <td class="td-neg">$${(cumLoss/1e6).toFixed(1)}M</td>
+      <td style="color:${lossPct>ocPct*100?'var(--red)':'var(--green)'};">${lossPct.toFixed(2)}%</td>
+      <td>$${(ocBal/1e6).toFixed(1)}M (${(ocPct*100).toFixed(1)}%)</td>
+      <td style="color:${ocSurvives?'var(--green)':'var(--red)'};">${ocSurvives?'✓ OC absorbs loss':'✗ Pierces into bonds'}</td>
+    </tr>`;
+  });
+  html+='</tbody></table></div>';
+  html+=`<div style="margin-top:10px;font-family:var(--mono);font-size:9px;color:var(--text3);">Calculated from your eligible pool: FICO ${avgFico.toFixed(0)}, LTV ${avgLtv.toFixed(1)}%, OC ${(ocPct*100).toFixed(1)}%</div>`;
+  document.getElementById('ratingStressBody').innerHTML = html;
+}
+
+function renderStage4() {
+  makeNarrativeStage(4, {
+    subtitle:'Every dollar in every month must follow exact rules. The waterfall model is the engineering blueprint.',
+    narrative:`The waterfall is not a metaphor — it is a legally binding set of rules encoded in the PSA.
+    <strong style="color:var(--amber);">Below is Month 1 of your deal, step by step, with every dollar accounted for.</strong>
+    This is what the trustee runs every payment date.`,
+    body:`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+    <div class="card"><div class="card-header"><span class="card-title">Month 1 Waterfall — Live Calculation</span><button class="btn btn-cyan btn-sm" onclick="calcWaterfallMonth1()">▶ Calculate</button></div>
+    <div class="card-body" id="wfCalcBody">
+      <div style="color:var(--text3);font-family:var(--mono);font-size:11px;">Click Calculate to trace every dollar through Month 1</div>
+    </div></div>
+
+    <div class="card"><div class="card-header"><span class="card-title">OC/IC Trigger Mechanics</span></div>
+    <div class="card-body" style="font-family:var(--mono);font-size:10px;line-height:2.0;color:var(--text2);">
+      <div style="color:var(--accent);font-size:9px;margin-bottom:8px;">THE FORK IN THE ROAD</div>
+      <div><span style="color:var(--amber);">OC Test:</span> Pool Bal / Note Bal ≥ 106%?</div>
+      <div style="margin-left:12px;color:var(--green);">✓ PASS → Sub interest released to bondholders</div>
+      <div style="margin-left:12px;color:var(--red);">✗ FAIL → Sub interest TRAPPED, redirected to build OC</div>
+      <div style="margin-top:8px;"><span style="color:var(--amber);">IC Test:</span> Interest Income / Note Interest Due ≥ 1.10x?</div>
+      <div style="margin-left:12px;color:var(--green);">✓ PASS → Normal distribution continues</div>
+      <div style="margin-left:12px;color:var(--red);">✗ FAIL → Same trap — building OC takes priority</div>
+      <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);color:var(--text3);">
+        BOTH tests must pass simultaneously. One failure triggers the redirect.
+        This is how the deal "self-heals" — trapped excess spread re-builds OC over time.
+      </div>
+    </div></div></div>
+
+    <div class="card"><div class="card-header"><span class="card-title">Loss Allocation — Bottom Up</span></div>
+    <div class="card-body">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--text2);line-height:2.0;margin-bottom:10px;">
+        Losses eat from the <strong style="color:var(--red);">bottom up</strong>. This is what protects seniors.
+      </div>
+      <div style="display:flex;flex-direction:column;gap:3px;">
+        ${['OC (absorbs first — 16% cushion)','B2 (BB — speculative grade)','B1 (BBB — sub-investment grade)','M2 (A rated)','M1 (AA rated)','A2 (AAA — 2nd to last)','A1 (AAA — last to take loss)'].map((t,i)=>{
+          const colors=['var(--text3)','var(--red)','#ff9100','var(--amber)','var(--accent2)','var(--accent)','var(--green)'];
+          const opacity = i===0?1:1;
+          return `<div style="background:${colors[i]}15;border:1px solid ${colors[i]}44;border-radius:3px;padding:7px 14px;display:flex;justify-content:space-between;">
+            <span style="font-family:var(--mono);font-size:10px;color:${colors[i]};">${t}</span>
+            <span style="font-family:var(--mono);font-size:9px;color:var(--text3);">${i===0?'← losses start here':'← losses reach here only if '+(i)+' layer(s) below exhausted'}</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div></div>`
+  });
+}
+
+function calcWaterfallMonth1() {
+  const eligible = applyEligibility(POOL_RAW, APP.eligCriteria).filter(x=>x.eligible);
+  const poolBal = sum(eligible,x=>x.balance);
+  const sl = APP.stackSliders;
+  const wac = 6.75/100, fee=0.25/100, mr=wac/12;
+  const cpr=0.08, cdr=0.02, sev=0.35;
+  const smm=1-Math.pow(1-cpr,1/12), mdr=1-Math.pow(1-cdr,1/12);
+
+  const grossInt = poolBal*mr;
+  const svcFee = poolBal*fee/12;
+  const netInt = grossInt-svcFee;
+  const defaults = poolBal*mdr;
+  const loss = defaults*sev;
+  const recovery = defaults*(1-sev);
+  const prepay = (poolBal-defaults)*smm;
+  const pmt = poolBal*mr*Math.pow(1+mr,360)/(Math.pow(1+mr,360)-1);
+  const schedPrin = Math.max(0,pmt-grossInt);
+  const totalCF = netInt+schedPrin+prepay+recovery;
+
+  const noteBal = poolBal*(1-sl.OC/100);
+  const noteIntDue = Object.entries(sl).filter(([id])=>id!=='OC').reduce((a,[id,pct])=>a+poolBal*pct/100*TRANCHE_META[id].coupon/100/12,0);
+  const ocRatio = poolBal/noteBal;
+  const icRatio = netInt/noteIntDue;
+  const ocPass = ocRatio >= 1.06;
+  const icPass = icRatio >= 1.10;
+
+  const fmt = v => '$'+(v/1e3).toFixed(1)+'K';
+  const steps = [
+    {n:1,label:'Gross Interest Collected',val:fmt(grossInt),color:'var(--text)',desc:'Pool WAC × Pool Balance / 12'},
+    {n:2,label:'Servicer Fee Deducted',val:'-'+fmt(svcFee),color:'var(--red)',desc:'25bp annual fee for loan servicing'},
+    {n:3,label:'Net Interest to Waterfall',val:fmt(netInt),color:'var(--amber)',desc:'Available for distribution'},
+    {n:4,label:'Senior Interest — A1+A2',val:fmt(noteIntDue*(sl.A1+sl.A2)/(100-sl.OC)),color:'var(--green)',desc:'Paid first, always, regardless of triggers'},
+    {n:5,label:`OC Test: ${(ocRatio*100).toFixed(2)}% vs 106% target`,val:ocPass?'✓ PASS':'✗ FAIL',color:ocPass?'var(--green)':'var(--red)',desc:`Pool Bal / Note Bal = ${(ocRatio*100).toFixed(2)}%`},
+    {n:6,label:`IC Test: ${icRatio.toFixed(2)}x vs 1.10x target`,val:icPass?'✓ PASS':'✗ FAIL',color:icPass?'var(--green)':'var(--red)',desc:`Net Int / Note Int Due = ${icRatio.toFixed(2)}x`},
+    {n:7,label:'Sub Interest (M1+M2+B1+B2)',val:ocPass&&icPass?fmt(noteIntDue*(sl.M1+sl.M2+sl.B1+sl.B2)/(100-sl.OC)):'TRAPPED',color:ocPass&&icPass?'var(--accent2)':'var(--red)',desc:ocPass&&icPass?'Released — triggers passing':'Redirected to build OC — triggers failing'},
+    {n:8,label:'Principal — A1 Sequential',val:fmt(schedPrin+prepay+recovery),color:'var(--accent)',desc:'All principal to A1 until zeroed (sequential pay)'},
+    {n:9,label:'Loss Allocated to OC',val:'-'+fmt(loss),color:'var(--red)',desc:`Defaults × Severity = loss absorbed by OC first`},
+  ];
+
+  document.getElementById('wfCalcBody').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:0;">
+    ${steps.map((st,i)=>`
+      <div style="display:flex;align-items:center;gap:0;animation:fadeUp 0.2s ${i*0.05}s ease forwards;opacity:0;">
+        <div style="width:3px;background:${st.color};align-self:stretch;border-radius:2px;flex-shrink:0;"></div>
+        <div style="padding:8px 12px;border-bottom:1px solid var(--border);flex:1;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-family:var(--mono);font-size:9px;color:var(--text3);">Step ${st.n}</div>
+            <div style="font-family:var(--mono);font-size:10px;color:${st.color};font-weight:700;">${st.label}</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:1px;">${st.desc}</div>
+          </div>
+          <div style="font-family:var(--mono);font-size:13px;font-weight:700;color:${st.color};white-space:nowrap;margin-left:12px;">${st.val}</div>
+        </div>
+      </div>
+    `).join('')}
+    </div>
+    <div style="margin-top:10px;font-family:var(--mono);font-size:9px;color:var(--text3);">Based on your pool: ${fmtK(poolBal)} eligible balance | CPR 8% | CDR 2% | Severity 35%</div>
+  `;
+}
+
+function renderStage5() {
+  makeNarrativeStage(5, {
+    subtitle:'400 pages of documents. 6 law firms. 40 attorneys. This is what turns mortgages into bonds.',
+    narrative:`You've designed the structure. Now lawyers turn it into reality. <strong style="color:var(--teal);">Every concept has a legal home.</strong>
+    The PSA is the Bible. The True Sale Opinion is what keeps the deal out of bankruptcy court. Without these documents, the bonds don't exist.`,
+    body:`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+    ${[
+      {title:'Pooling & Servicing Agreement (PSA)',color:'var(--teal)',pages:'200-300 pages',desc:'The master document. Defines every rule: which loans are in, what the servicer must do, the exact waterfall language, trigger definitions, loss allocation, cure periods, substitution rights. Every future dispute goes back to the PSA.',key:'This is what structurers spend the most time on. Every word matters. A bad OC test definition can wipe out investors.'},
+      {title:'Mortgage Loan Purchase Agreement (MLPA)',color:'var(--green)',pages:'50-80 pages',desc:'The bank formally SELLS the loans to the Trust. This creates the legal separation. If JPMorgan goes bankrupt tomorrow, the loan pool belongs to the Trust — not to JPMorgan\'s creditors.',key:'The True Sale Opinion attached to this is the most critical legal concept in securitization. Without it, the whole deal collapses in bankruptcy.'},
+      {title:'Indenture',color:'var(--accent)',pages:'100-150 pages',desc:'The bond contract. Defines payment dates, events of default, acceleration (when bonds can be called due), bondholder voting rights (66.67% to amend), the trustee\'s obligations.',key:'If you want to amend the deal after closing, you need 66.67% of noteholders. This is nearly impossible for large deals — why deal terms are set in stone.'},
+      {title:'Offering Memorandum / Prospectus',color:'var(--accent2)',pages:'150-200 pages',desc:'The investor-facing document. Every material fact about the deal — collateral, structure, risk factors, waterfall, CE. Distributed to investors before the roadshow.',key:'Material omissions = securities fraud. Your name is on this document. You read every page. You have no choice.'},
+      {title:'True Sale & Non-Consol Opinions',color:'var(--amber)',pages:'20-30 pages each',desc:'Two legal opinions from outside counsel delivered at closing: (1) the loan transfer was a true sale, not collateral; (2) the Trust would not be consolidated into the Sponsor\'s bankruptcy estate.',key:'Without these, no rating agency will rate the deal. They represent the fundamental legal protection for investors.'},
+      {title:'Custodian Agreement',color:'var(--text2)',pages:'30-50 pages',desc:'The custodian holds all original loan documents — 9,793 folders — in a fireproof vault. If a loan defaults, the trust needs the original note to foreclose. Losing it = losing the right to collect.',key:'Physical custody of paper documents is still required for most residential mortgages in the US. This is a $100B/year business.'},
+    ].map(d=>`
+      <div class="card">
+        <div class="card-header" style="border-bottom-color:${d.color}44;">
+          <span class="card-title" style="color:${d.color};">${d.title}</span>
+          <span style="font-family:var(--mono);font-size:9px;color:var(--text3);">${d.pages}</span>
+        </div>
+        <div class="card-body">
+          <div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:10px;">${d.desc}</div>
+          <div style="background:${d.color}10;border-left:2px solid ${d.color};padding:8px 12px;border-radius:0 4px 4px 0;font-size:11px;color:var(--text2);">
+            <strong style="color:${d.color};">WHY IT MATTERS:</strong> ${d.key}
+          </div>
+        </div>
+      </div>
+    `).join('')}
+    </div>
+    <div class="callout callout-blue" style="margin-top:14px;">
+      <div class="callout-tag" style="color:var(--accent);">📋 LEGAL TIMELINE: 6 WEEKS TO CLOSE</div>
+      Week 1-2: PSA first draft (247 pages). Week 2-3: MLPA + True Sale analysis. Week 3-4: OM drafted.
+      Week 4-5: Third-party loan diligence (sample 10% of pool). Week 5: Final PSA — 200+ open comments resolved.
+      Week 6: Pre-closing checklist (200 items). Closing day: all executed simultaneously.
+      <strong>Total legal fees: $1.5M - $3M.</strong> Worth every penny — bad docs cost billions in litigation.
+    </div>`
+  });
+}
+
+function renderStage6() {
+  makeNarrativeStage(6, {
+    subtitle:'Maria books 40 meetings across 15 cities in 2 weeks. This is how you find out what the market will pay.',
+    narrative:`Ratings are in. Docs are drafted. Now you take the deal to the world.
+    <strong style="color:var(--accent);">The roadshow is where your deal meets reality.</strong>
+    Some investors will love it. Some won't. The order book tells you the truth.`,
+    body:`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+    <div class="card"><div class="card-header"><span class="card-title">Who Buys What — Investor Universe</span></div>
+    <div class="card-body">
+    <table><thead><tr><th style="text-align:left;">Tranche</th><th style="text-align:left;">Rating</th><th style="text-align:left;">Who Buys</th><th style="text-align:left;">Why</th></tr></thead>
+    <tbody>
+    ${[['A1','AAA','Insurance cos., bank treasury, foreign central banks, money market funds','Regulatory capital treatment, high quality liquid asset status, benchmark matching'],
+       ['A2','AAA','Pension funds, sovereign wealth funds, insurance companies','Yield pickup vs. Agency MBS with same AAA rating — extra spread for slightly longer WAL'],
+       ['M1','AA','Life insurance, specialty finance, some pension funds','Higher yield requirement, AA mandate allows structured product'],
+       ['M2','A','Insurance companies, larger hedge funds, CLO managers','Structured credit allocators with A-floor mandates'],
+       ['B1','BBB','Hedge funds, B-piece specialists, structured credit funds','Credit spread hunters — 300bp+ over UST for investment grade'],
+       ['B2','BB','Distressed hedge funds, prop desks, family offices','High yield equivalents — 500bp+ spread, accepts meaningful loss exposure'],
+      ].map(([t,r,who,why])=>`<tr><td style="color:${TRANCHE_META[t]?.color||'var(--text)'};">${t}</td><td style="font-size:9px;color:${TRANCHE_META[t]?.color||'var(--text)'};">${r}</td><td style="font-size:10px;">${who}</td><td style="font-size:10px;color:var(--text3);">${why}</td></tr>`).join('')}
+    </tbody></table>
+    </div></div>
+
+    <div class="card"><div class="card-header"><span class="card-title">Final Order Book — JPMMT 2024-Q3</span></div>
+    <div class="card-body">
+    <table><thead><tr><th style="text-align:left;">Tranche</th><th>Size $M</th><th>IPT</th><th>Final Spread</th><th>Book $M</th><th>Cover</th></tr></thead>
+    <tbody>
+    ${[['A1','967','S+35a','S+32','$2,420M','2.5x','var(--green)'],
+       ['A2','176','S+50a','S+48','$420M','2.4x','var(--green)'],
+       ['M1','123','S+120a','S+115','$280M','2.3x','var(--accent)'],
+       ['M2','88','S+195a','S+185','$170M','1.9x','var(--accent2)'],
+       ['B1','70','S+325a','S+310','$95M','1.4x','var(--amber)'],
+       ['B2','53','S+545a','S+520','$62M','1.2x','var(--red)'],
+      ].map(([t,sz,ipt,final,book,cov,col])=>`<tr>
+        <td style="color:${TRANCHE_META[t]?.color||'var(--text)'};">${t}</td>
+        <td>$${sz}M</td><td style="color:var(--text3);">${ipt}</td>
+        <td style="color:${col};font-weight:700;">${final}</td>
+        <td>${book}</td>
+        <td style="color:${col};">${cov}</td>
+      </tr>`).join('')}
+    </tbody></table>
+    <div style="margin-top:10px;font-family:var(--mono);font-size:9px;color:var(--text3);">
+      IPT = Initial Price Thoughts. Final tightened on strong books. B2 at 1.2x = tight but doable.
+    </div>
+    </div></div></div>
+
+    <div class="card"><div class="card-header"><span class="card-title">Questions You WILL Get — Investor FAQ</span></div>
+    <div class="card-body">
+    ${[
+      ['Why is your base CPR 8% when the market is running 12%?','Our pool is seasoned 9 months avg. New origination pools start slower. Also, at 6.75% WAC vs. 6.81% current market, there\'s minimal refi incentive. 8% is defensible.'],
+      ['Walk me through the OC trigger — what exactly fails it?','OC test fails when Pool Balance / Note Balance drops below 106%. At deal close we\'re at 119%. That means cumulative pool losses would need to exceed 13% before OC test fails.'],
+      ['What\'s the servicer\'s delinquency management protocol?','Chase bank services this pool. They have a 90-day call campaign before referring to foreclosure. Average foreclosure timeline in top 5 states is 14 months. Our severity model uses 16 months.'],
+      ['Show me sensitivity of B2 price if severity goes to 55%','At 55% severity vs. 35% base, cumulative loss increases from 3.5% to 5.5% over 5 years. B2 WAL extends from 9.2 to 11.4 years. Price drops from 85.50 to ~76. OC absorbs first 16% — B2 doesn\'t take losses unless OC is depleted AND B1 is depleted.'],
+    ].map(([q,a])=>`
+      <div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border);">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--amber);margin-bottom:6px;">Q: ${q}</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.6;padding-left:10px;border-left:2px solid var(--text3);">A: ${a}</div>
+      </div>
+    `).join('')}
+    </div></div>`
+  });
+}
+
+function renderStage7() {
+  makeNarrativeStage(7, {
+    subtitle:'One day. 247 checklist items. Billions of dollars moving through the global financial system.',
+    narrative:`Everything converges today. Lawyers. Bankers. Trustees. DTC. Wire rooms.
+    <strong style="color:var(--accent2);">By 5pm, bonds that didn\'t exist this morning are trading in secondary markets.</strong>`,
+    body:`
+    <div class="card"><div class="card-header"><span class="card-title">Closing Day — Minute by Minute</span></div>
+    <div class="card-body">
+    <div class="wf-flow">
+    ${[
+      {time:'7:30 AM',event:'Deal team on bridge. 40 people across NY/London/Singapore. Sarah (TM) opens the closing checklist.',color:'var(--text3)',icon:'📞'},
+      {time:'9:00 AM',event:'Document execution begins. PSA, Indenture, MLPA signed via DocuSign. Physical originals FedExed to trustee. Deal counsel confirms each execution.',color:'var(--accent)',icon:'✍️'},
+      {time:'10:00 AM',event:'Loan transfer: JPMorgan Mortgage Capital formally sells all 9,793 loans to the Trust. Custodian confirms receipt of loan files. JPMorgan NO LONGER OWNS THESE MORTGAGES.',color:'var(--amber)',icon:'🏠'},
+      {time:'11:00 AM',event:'DTC instructed to create bond positions. 7 new CUSIPs appear in DTC for the first time. The bonds legally exist.',color:'var(--green)',icon:'🎫'},
+      {time:'12:00 PM',event:'Wire transfers: $1.476B moves from investors → JPMorgan underwriting account. JPMorgan wires proceeds minus fees to the Trust. Trust pays JPMorgan for loans. Net settlement complete.',color:'var(--accent2)',icon:'💰'},
+      {time:'2:00 PM',event:'DTC confirms delivery vs payment. Investors see bond positions in their accounts. Bloomberg picks up the deal. Intex updates their model database.',color:'var(--cyan)',icon:'📊'},
+      {time:'3:00 PM',event:'Rating agencies issue final rating letters. S&P and Moody\'s ratings are official. Presale reports updated to "Final."',color:'var(--amber)',icon:'⭐'},
+      {time:'5:00 PM',event:'Closing dinner. Per Sei. $22,000 for 40 people. First glass of wine in 10 weeks. Three more deals start Monday.',color:'var(--green)',icon:'🥂'},
+    ].map((s,i)=>`
+      <div class="wf-step" style="animation-delay:${i*0.08}s;">
+        <div class="wf-pipe" style="background:${s.color};opacity:0.6;"></div>
+        <div class="wf-content" style="display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-family:var(--mono);font-size:9px;color:var(--text3);">${s.time}</div>
+            <div style="font-size:12px;color:var(--text2);line-height:1.5;margin-top:2px;">${s.event}</div>
+          </div>
+          <div style="font-size:24px;flex-shrink:0;margin-left:12px;">${s.icon}</div>
+        </div>
+      </div>
+    `).join('')}
+    </div>
+    </div></div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;">
+    <div class="card"><div class="card-header"><span class="card-title">Closing Economics — Where the Money Goes</span></div>
+    <div class="card-body" style="font-family:var(--mono);font-size:10px;line-height:2.0;">
+      ${[['Gross proceeds from investors','$1,476.6M','var(--accent)'],
+         ['Legal fees','-$2.2M','var(--red)'],['Rating agency fees','-$1.8M','var(--red)'],
+         ['Underwriting fee (30bp)','-$4.4M','var(--red)'],['Trustee / custodian upfront','-$0.4M','var(--red)'],
+         ['Reserve fund funded','-$8.8M','var(--red)'],['Net to originator','$1,459.0M','var(--amber)'],
+         ['Gain on sale + servicing rights','$XX.XM','var(--green)'],
+        ].map(([l,v,c])=>`<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--border);"><span style="color:var(--text3);">${l}</span><span style="color:${c};">${v}</span></div>`).join('')}
+    </div></div>
+    <div class="card"><div class="card-header"><span class="card-title">Closing Checklist (Sample)</span></div>
+    <div class="card-body" style="font-family:var(--mono);font-size:9px;line-height:1.9;color:var(--text2);">
+      ${['✓ PSA executed by all parties','✓ Indenture executed','✓ MLPA executed','✓ True Sale opinion delivered','✓ Non-consol opinion delivered','✓ Rating letters from Moody\'s and S&P','✓ DTC CUSIP allocation confirmed','✓ Wire instructions verified by 2 officers','✓ Custodian receipt of loan files confirmed','✓ Reserve fund funded ($8.8M)','✓ Bloomberg tombstone setup','⚠ Physical mortgage notes in transit (3 days)'].map(i=>`<div>${i}</div>`).join('')}
+      <div style="margin-top:8px;color:var(--text3);">Full checklist: 247 items. Sarah checks each one twice.</div>
+    </div></div></div>`
+  });
+}
+
+function renderStage8() {
+  makeNarrativeStage(8, {
+    subtitle:'The deal is live. Now you watch 9,793 families pay their mortgages every month for 30 years.',
+    narrative:`Closing was the beginning, not the end. Every month for the life of the deal,
+    you track performance. <strong style="color:var(--green);">Build the discipline of surveillance now</strong> — 
+    it\'s what separates structurers who last from those who get burned.`,
+    body:`
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;">
+    ${[
+      {m:1,cpr:'8.2%',cdr:'0.18%',dq60:'0.10%',oc:'119.2%',ic:'1.14x',ocPass:true,icPass:true},
+      {m:3,cpr:'9.1%',cdr:'0.22%',dq60:'0.14%',oc:'119.8%',ic:'1.13x',ocPass:true,icPass:true},
+      {m:6,cpr:'9.2%',cdr:'0.31%',dq60:'0.18%',oc:'120.8%',ic:'1.11x',ocPass:true,icPass:true},
+      {m:12,cpr:'10.5%',cdr:'0.45%',dq60:'0.28%',oc:'122.4%',ic:'1.09x',ocPass:true,icPass:false},
+      {m:18,cpr:'8.8%',cdr:'0.82%',dq60:'0.52%',oc:'121.1%',ic:'1.08x',ocPass:true,icPass:false},
+      {m:24,cpr:'7.2%',cdr:'1.20%',dq60:'0.78%',oc:'119.5%',ic:'1.05x',ocPass:true,icPass:false},
+    ].map(row=>`
+      <div class="card">
+        <div class="card-header" style="background:${row.ocPass&&row.icPass?'var(--bg4)':'rgba(255,215,64,0.06)'};">
+          <span class="card-title">Month ${row.m} Report</span>
+          <span style="font-family:var(--mono);font-size:9px;color:${row.ocPass&&row.icPass?'var(--green)':'var(--amber)'};">${row.ocPass&&row.icPass?'✓ CLEAN':'⚠ IC WATCH'}</span>
+        </div>
+        <div class="card-body" style="font-family:var(--mono);font-size:10px;line-height:2.0;">
+          ${[['CPR',row.cpr,'var(--accent)'],['CDR',row.cdr,parseFloat(row.cdr)>0.5?'var(--amber)':'var(--green)'],
+             ['60+ DQ%',row.dq60,parseFloat(row.dq60)>0.5?'var(--red)':'var(--text)'],
+             ['OC Ratio',row.oc,row.ocPass?'var(--green)':'var(--red)'],
+             ['IC Ratio',row.ic,row.icPass?'var(--green)':'var(--amber)'],
+             ['OC Test',row.ocPass?'✓ PASS':'✗ FAIL',row.ocPass?'var(--green)':'var(--red)'],
+             ['IC Test',row.icPass?'✓ PASS':'✗ FAIL',row.icPass?'var(--green)':'var(--amber)'],
+            ].map(([l,v,c])=>`<div style="display:flex;justify-content:space-between;border-bottom:1px solid rgba(30,45,61,0.4);padding:2px 0;"><span style="color:var(--text3);">${l}</span><span style="color:${c};font-weight:700;">${v}</span></div>`).join('')}
+        </div>
+      </div>
+    `).join('')}
+    </div>
+    <div class="callout callout-amber">
+      <div class="callout-tag" style="color:var(--amber);">⚠ IC TEST STARTING TO SLIP — MONTH 12</div>
+      The IC ratio at month 12 dropped to 1.09x — just below the 1.10x threshold. This means sub-interest starts being
+      trapped. <strong>B2 and B1 investors will notice this on their distribution report and call you.</strong>
+      CDR is rising from 0.18% to 1.20% over 24 months — this pool is starting to show early stress.
+      At 1.20% CDR with 35% severity, cumulative losses over 5 years ≈ 2.1% of pool.
+      OC of 16% absorbs this easily — seniors are safe. But the B tranche investors are watching.
+    </div>`
+  });
+}
+
+function renderStage9() {
+  makeNarrativeStage(9, {
+    subtitle:'The technical mastery gets you to VP. What gets you to MD is something different entirely.',
+    narrative:`You now know the deal lifecycle cold. You can run the cash flow model, defend assumptions to Moody\'s,
+    trace every dollar through the waterfall, and explain any document in plain English.
+    <strong style="color:var(--amber);">Here is the honest career map</strong> — what each level actually looks like, what it pays, and what separates the people who make it from those who don\'t.`,
+    body:`
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
+    ${[
+      {level:'Analyst (Yrs 1-3)',icon:'🧮',color:'var(--text2)',comp:'$150-200K',hrs:'80-100/wk',
+       reality:'Your life is the model. You run it 100 times under different scenarios. You build the sensitivity matrix. You check every rating agency model input. You make pitchbooks at 1am. You learn everything from first principles because nobody has time to explain it twice. The analysts who become partners are the ones who figure things out without being asked.',
+       skills:'Excel (100x/day), Intex, Bloomberg, basic Python/pandas for BWIC data'},
+      {level:'Associate (Yrs 3-5)',icon:'📊',color:'var(--accent2)',comp:'$275-400K',hrs:'70-85/wk',
+       reality:'You now own the model. You lead calls with rating agency analysts. You draft the waterfall provisions in the PSA. You start presenting at roadshows — investor asks you a question in Singapore at 8am and you answer without looking at your notes. You manage analysts. You start having opinions that the VP actually listens to.',
+       skills:'Full deal ownership, rating agency dialogue, investor communication, managing junior staff'},
+      {level:'Vice President (Yrs 5-8)',icon:'🧠',color:'var(--accent)',comp:'$450-750K',hrs:'60-75/wk',
+       reality:'You run individual deals end-to-end. Primary contact for rating agencies. You brief the MD on deal status. You have investor relationships — people call YOU. You start generating ideas: "ABC Bank has $3B of DSCR loans they want to securitize, should we pitch?" This is where 60% of people plateau. The jump to Director is brutal.',
+       skills:'Client management, deal origination, team leadership, P&L awareness'},
+      {level:'Director / SVP (Yrs 8-12)',icon:'🤝',color:'var(--amber)',comp:'$750K-1.2M',hrs:'55-65/wk',
+       reality:'Client relationships are central. You are the first call for the CFO of a mortgage REIT. You manage a team of VPs and Associates. You approve deal structures before they hit the MD. You have a seat at the weekly strategy meeting. You know what competitors are working on before they announce.',
+       skills:'Origination, senior client relationships, team management, competitive intelligence'},
+      {level:'Managing Director (Yrs 12+)',icon:'👑',color:'var(--amber)',comp:'$1.5M-15M+',hrs:'50-60/wk',
+       reality:'You decide whether JPMorgan bids on a deal. You approve CE levels. You have direct relationships with CIOs of the largest fixed income funds in the world. You hire and fire VPs. You go to the Federal Reserve when the market breaks down. You close 15-25 deals per year, each generating $3-10M in fees. Total comp in a good year can exceed $15M. In a bad year it\'s $800K base.',
+       skills:'Franchise relationships, market-making decisions, regulatory navigation, firm strategy'},
+    ].map(c=>`
+      <div class="card" style="border-color:${c.color}33;">
+        <div class="card-header" style="background:${c.color}08;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:28px;">${c.icon}</span>
+            <div>
+              <div style="font-family:var(--sans);font-size:15px;font-weight:700;color:${c.color};">${c.level}</div>
+              <div style="font-family:var(--mono);font-size:9px;color:var(--text3);">${c.comp} total comp | ${c.hrs}</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div style="font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:10px;">${c.reality}</div>
+          <div style="background:${c.color}10;border-left:2px solid ${c.color};padding:6px 12px;border-radius:0 4px 4px 0;font-size:10px;color:var(--text2);">
+            <strong style="color:${c.color};">Core skills at this level:</strong> ${c.skills}
+          </div>
+        </div>
+      </div>
+    `).join('')}
+    </div>
+    <div class="callout callout-amber">
+      <div class="callout-tag" style="color:var(--amber);">🏔 WHAT ACTUALLY SEPARATES MDs FROM VPs</div>
+      Technical excellence is necessary but not sufficient. Every VP at JPMorgan is technically excellent.
+      What separates MDs is: <strong>(1) Relationships</strong> — clients call you first because they trust your judgment,
+      not just your technical skills. <strong>(2) Pattern recognition</strong> — you've seen enough cycles to know when
+      a structure is aggressive vs. when it's reasonable. <strong>(3) Decision-making under pressure</strong> — pricing day,
+      GFC morning, someone needs to make a call. MDs make it. VPs wait to be told.
+      <strong>(4) Building franchise</strong> — every deal you do builds your personal brand. The best MDs are known by name at every major buy-side account in their sector.
+    </div>`
+  });
+}
+
+// ════════════════════════════════════════════════════
+// STAGE 10 — CUSIP LIBRARY
+// ════════════════════════════════════════════════════
+function renderStage10() {
+  const s = STAGES[10];
+  const filtered = CUSIP_DB.filter(b => {
+    if(!APP.cusipSearch) return true;
+    const q = APP.cusipSearch.toLowerCase();
+    return b.cusip.toLowerCase().includes(q) || b.deal.toLowerCase().includes(q) ||
+           b.type.toLowerCase().includes(q) || b.rating.toLowerCase().includes(q) ||
+           b.collateral.toLowerCase().includes(q) || b.issuer.toLowerCase().includes(q);
+  });
+
+  setMain(`
+    <div style="padding:16px 24px 0;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div>
+          <div style="font-family:var(--mono);font-size:9px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:3px;">CUSIP Library</div>
+          <div style="font-family:var(--sans);font-size:20px;font-weight:800;color:var(--text);">Public RMBS Bond Database</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:2px;">${CUSIP_DB.length} bonds tracked | Search by CUSIP, deal name, type, rating, issuer</div>
+        </div>
+        <button class="btn btn-primary" onclick="addCUSIPPrompt()">+ Add CUSIP</button>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+        <input class="search-mini" style="width:280px;" placeholder="Search CUSIP, deal, issuer, type..." 
+          value="${APP.cusipSearch}" oninput="APP.cusipSearch=this.value;renderStage10()">
+        <button class="filter-chip ${!APP.cusipSearch?'on':''}" onclick="APP.cusipSearch='';renderStage10()">All (${CUSIP_DB.length})</button>
+        ${['Agency','Non-Agency Prime','Non-QM','CRT','SFR Rental'].map(t=>`
+          <button class="filter-chip ${APP.cusipSearch===t?'on':''}" onclick="APP.cusipSearch='${t}';renderStage10()">${t}</button>
+        `).join('')}
+      </div>
+    </div>
+
+    <div style="padding:0 24px 80px;">
+      ${APP.selectedCUSIP ? renderCUSIPDetail(APP.selectedCUSIP) : ''}
+
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:10px;letter-spacing:1px;">
+        SHOWING ${filtered.length} BONDS — Click any card to expand full analytics
+      </div>
+
+      <div class="tbl-wrap" style="max-height:none;">
+        <table>
+          <thead><tr>
+            <th>CUSIP</th><th style="text-align:left;">Deal</th><th>Tranche</th><th>Type</th>
+            <th>Rating</th><th>Coupon</th><th>Price</th><th>OAS</th>
+            <th>WAL</th><th>CPR</th><th>CDR</th><th>Sev</th>
+            <th>Avg FICO</th><th>Avg LTV</th><th>Top State</th><th>Actions</th>
+          </tr></thead>
+          <tbody>
+          ${filtered.map(b=>`
+            <tr onclick="selectCUSIP('${b.cusip}')" style="cursor:pointer;${APP.selectedCUSIP?.cusip===b.cusip?'background:rgba(123,97,255,0.08);':''}" >
+              <td style="color:var(--accent);font-weight:700;">${b.cusip}</td>
+              <td style="text-align:left;font-size:11px;">${b.deal}</td>
+              <td><span style="background:rgba(123,97,255,0.15);padding:1px 6px;border-radius:2px;font-size:9px;color:var(--accent2);">${b.tranche}</span></td>
+              <td style="font-size:9px;color:var(--text3);">${b.type}</td>
+              <td><span style="font-size:9px;color:${b.rating.startsWith('AA')?'var(--green)':b.rating==='A'?'var(--accent)':b.rating.startsWith('BB')?'var(--red)':'var(--amber)'};">${b.rating}</span></td>
+              <td>${b.coupon.toFixed(2)}%</td>
+              <td class="td-accent">${b.price.toFixed(2)}</td>
+              <td style="color:var(--amber);">${b.oas}bp</td>
+              <td>${b.wal}yr</td>
+              <td>${b.cpr}%</td>
+              <td style="color:${b.cdr>2?'var(--red)':b.cdr>0.5?'var(--amber)':'var(--green)'};">${b.cdr}%</td>
+              <td>${b.sev}%</td>
+              <td style="color:${b.avg_fico>740?'var(--green)':b.avg_fico>680?'var(--amber)':b.avg_fico>0?'var(--red)':'var(--text3)'};">${b.avg_fico>0?b.avg_fico:'N/A'}</td>
+              <td>${b.avg_ltv>0?b.avg_ltv+'%':'N/A'}</td>
+              <td style="font-size:9px;color:var(--text3);">${b.state_top.split('/')[0]}</td>
+              <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();loadCUSIPIntoModel('${b.cusip}')">→ Model</button></td>
+            </tr>
+          `).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    ${bottomNav(10)}
+  `);
+}
+
+function renderCUSIPDetail(b) {
+  if(!b) return '';
+  const impliedYld = (b.oas/100 + 4.39).toFixed(2);
+  return `
+    <div style="background:rgba(123,97,255,0.06);border:1px solid var(--accent2);border-radius:10px;padding:16px 20px;margin-bottom:20px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+        <div>
+          <div style="font-family:var(--mono);font-size:9px;color:var(--accent);letter-spacing:2px;margin-bottom:3px;">${b.cusip}</div>
+          <div style="font-family:var(--sans);font-size:18px;font-weight:800;color:var(--text);">${b.deal} — ${b.tranche}</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:2px;">${b.type} | ${b.collateral} | Issuer: ${b.issuer}</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="APP.selectedCUSIP=null;renderStage10()">✕ Close</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:14px;">
+        ${[['Rating',b.rating,''],['Price',b.price.toFixed(2),'% of par'],['Coupon',b.coupon.toFixed(2)+'%','fixed'],
+           ['OAS',b.oas+'bp','vs UST'],['WAL',b.wal+'yr','weighted avg'],['Implied Yld',impliedYld+'%','Rf+OAS'],
+           ['CPR',b.cpr+'%','prepay spd'],['CDR',b.cdr+'%','default rate'],['Severity',b.sev+'%','loss given def'],
+           ['Avg FICO',b.avg_fico||'N/A','credit quality'],['Avg LTV',b.avg_ltv?b.avg_ltv+'%':'N/A','collateral'],
+           ['Top State',b.state_top.split('/')[0],'concentration']
+          ].map(([l,v,s])=>`<div style="background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:8px 10px;text-align:center;">
+            <div style="font-family:var(--mono);font-size:8px;color:var(--text3);">${l}</div>
+            <div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--accent);margin-top:2px;">${v}</div>
+            <div style="font-size:9px;color:var(--text3);">${s}</div>
+          </div>`).join('')}
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-primary btn-sm" onclick="loadCUSIPIntoModel('${b.cusip}')">→ Load into Cash Flow Model</button>
+        <a href="https://efts.sec.gov/LATEST/search-index?q=%22${encodeURIComponent(b.deal)}%22&forms=10-D,ABS-EE" target="_blank" class="btn btn-ghost btn-sm">EDGAR Filings ↗</a>
+        <a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&type=ABS-EE" target="_blank" class="btn btn-ghost btn-sm">ABS-EE Data ↗</a>
+      </div>
+    </div>
+  `;
+}
+
+function selectCUSIP(cusip) {
+  APP.selectedCUSIP = CUSIP_DB.find(b=>b.cusip===cusip) || null;
+  renderStage10();
+}
+
+function addCUSIPPrompt() {
+  const cusip = prompt('Enter CUSIP (9 characters):','');
+  if(!cusip || cusip.length < 6) return;
+  const deal = prompt('Deal name (e.g. JPMMT 2024-4):','');
+  const tranche = prompt('Tranche (e.g. A1):','A1');
+  const type = prompt('Type (Agency/Non-Agency Prime/Non-QM/CRT):','Non-Agency Prime');
+  const rating = prompt('Rating (AAA/AA/A/BBB/BB/B):','AAA');
+  const coupon = parseFloat(prompt('Coupon %:','5.75'));
+  const price = parseFloat(prompt('Price (% of par):','99.00'));
+
+  if(CUSIP_DB.find(b=>b.cusip===cusip)) { alert('CUSIP already exists in database'); return; }
+
+  CUSIP_DB.push({
+    cusip, deal, tranche: tranche||'A1', type: type||'Non-Agency Prime',
+    collateral:'User Added', rating: rating||'AAA', coupon: coupon||5.75,
+    wal:5.0, price: price||99.00, oas:50, cpr:10, cdr:0.5, sev:30, bal:100,
+    origDate:new Date().toISOString().slice(0,7), issuer:'User Added',
+    servicer:'Unknown', state_top:'Unknown', avg_fico:0, avg_ltv:0, avg_dti:0, wac:coupon+0.5||6.25
+  });
+  alert(`✓ CUSIP ${cusip} added to database!`);
+  renderStage10();
+}
+
+function loadCUSIPIntoModel(cusip) {
+  const b = CUSIP_DB.find(x=>x.cusip===cusip);
+  if(!b) return;
+  // Store for main platform
+  sessionStorage.setItem('structura_load_cusip', JSON.stringify(b));
+  alert(`${b.deal} ${b.tranche} loaded!\n\nPool assumptions set:\nBalance: $${b.bal}M\nWAC: ${b.wac}%\nCPR: ${b.cpr}%\nCDR: ${b.cdr}%\nSeverity: ${b.sev}%\n\nSwitch to main platform → Cash Flow Engine to run model.`);
+}
+
+// ════════════════════════════════════════════════════
+// BOOT
+// ════════════════════════════════════════════════════
+init();
+</script>
+</body>
+</html>

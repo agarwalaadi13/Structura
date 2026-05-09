@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Structura — Structured Products Analytics</title>
+<meta name="description" content="Professional RMBS/ABS/CLO analytics. Live market data, waterfall models, duration lab, and structured finance education.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><polygon points='50,5 95,27 95,73 50,95 5,73 5,27' fill='%2300e5ff'/></svg>">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;600;700&family=Outfit:wght@300;400;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ══ RESET ══ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'Inter',sans-serif;font-size:13px;line-height:1.5;overflow-x:hidden}
+:root{
+  --bg0:#05080c;--bg1:#080d12;--bg2:#0c1218;--bg3:#111920;--bg4:#162028;
+  --b1:#1e2d3d;--b2:#253545;--b3:#2e4255;
+  --c:#00e5ff;--c2:#00b8d4;--p:#6c63ff;--p2:#9c8fff;
+  --g:#00e676;--r:#ff3d71;--a:#ffd740;--t:#64ffda;
+  --tx:#dde8f0;--tx2:#7899b4;--tx3:#4a6a80;
+  --mono:'IBM Plex Mono',monospace;--head:'Outfit',sans-serif;
+}
+
+/* ══ FULLSCREEN STATES ══ */
+#landingScreen,#emailScreen,#platformScreen{
+  position:fixed;inset:0;transition:opacity 0.5s ease,transform 0.5s ease;
+}
+#landingScreen{background:var(--bg0);overflow-y:auto;z-index:300}
+#emailScreen{background:rgba(0,0,0,0.92);backdrop-filter:blur(20px);z-index:400;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;}
+#emailScreen.open{opacity:1;pointer-events:all;}
+#platformScreen{z-index:100;opacity:0;pointer-events:none;}
+#platformScreen.open{opacity:1;pointer-events:all;}
+
+/* ══ SCANLINE ══ */
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.02) 2px,rgba(0,0,0,0.02) 4px);pointer-events:none;z-index:9999}
+
+/* ══ LANDING — NAV ══ */
+.landing-nav{
+  position:fixed;top:0;left:0;right:0;height:52px;z-index:350;
+  background:rgba(5,8,12,0.95);border-bottom:1px solid var(--b1);
+  backdrop-filter:blur(24px);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 32px;
+}
+.nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.nav-gem{width:26px;height:26px;background:linear-gradient(135deg,var(--c),var(--p));clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);box-shadow:0 0 20px rgba(0,229,255,0.5);animation:gemPulse 3s ease-in-out infinite;}
+@keyframes gemPulse{0%,100%{box-shadow:0 0 16px rgba(0,229,255,0.4)}50%{box-shadow:0 0 32px rgba(0,229,255,0.7)}}
+.nav-name{font-family:var(--head);font-weight:800;font-size:18px;color:var(--tx);}
+.nav-tag{font-family:var(--mono);font-size:8px;color:var(--c);letter-spacing:2px;text-transform:uppercase;margin-top:-2px;}
+.nav-cta{display:flex;align-items:center;gap:10px;}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:8px 18px;border-radius:6px;border:none;cursor:pointer;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:all 0.18s;text-decoration:none;}
+.btn-c{background:var(--c);color:#000;box-shadow:0 0 20px rgba(0,229,255,0.3);}
+.btn-c:hover{box-shadow:0 0 32px rgba(0,229,255,0.6);transform:translateY(-1px);}
+.btn-g{background:transparent;border:1px solid var(--b2);color:var(--tx2);}
+.btn-g:hover{border-color:var(--c);color:var(--c);}
+.live-pill{display:flex;align-items:center;gap:6px;background:rgba(0,230,118,0.1);border:1px solid rgba(0,230,118,0.3);border-radius:20px;padding:4px 12px;font-family:var(--mono);font-size:8px;color:var(--g);letter-spacing:1px;}
+.live-dot{width:5px;height:5px;border-radius:50%;background:var(--g);box-shadow:0 0 6px var(--g);animation:blink 1.4s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* ══ HERO ══ */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 32px 60px;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(0,229,255,0.07) 0%,transparent 70%),radial-gradient(ellipse 60% 40% at 80% 80%,rgba(108,99,255,0.06) 0%,transparent 70%);pointer-events:none;}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(30,45,61,0.3) 1px,transparent 1px),linear-gradient(90deg,rgba(30,45,61,0.3) 1px,transparent 1px);background-size:60px 60px;opacity:0.4;pointer-events:none;}
+.hero-eyebrow{font-family:var(--mono);font-size:10px;color:var(--c);letter-spacing:3px;text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:10px;}
+.hero-eyebrow::before,.hero-eyebrow::after{content:'';display:block;height:1px;width:40px;background:linear-gradient(90deg,transparent,var(--c));}
+.hero-eyebrow::after{transform:scaleX(-1);}
+.hero-title{font-family:var(--head);font-size:clamp(36px,6vw,72px);font-weight:900;line-height:1.05;letter-spacing:-2px;color:var(--tx);margin-bottom:20px;}
+.hero-title span{background:linear-gradient(135deg,var(--c),var(--p));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-sub{font-size:16px;color:var(--tx2);line-height:1.7;max-width:580px;margin:0 auto 36px;}
+.hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:60px;}
+.btn-hero{padding:13px 32px;font-size:11px;}
+
+/* ══ TICKER ══ */
+.ticker-strip{background:rgba(0,229,255,0.04);border-top:1px solid var(--b1);border-bottom:1px solid var(--b1);height:28px;overflow:hidden;position:relative;}
+.ticker-inner{display:flex;animation:ticker 60s linear infinite;white-space:nowrap;height:100%;}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.t-item{display:inline-flex;align-items:center;gap:6px;padding:0 20px;border-right:1px solid var(--b1);font-family:var(--mono);font-size:9px;}
+.t-lbl{color:var(--tx3)}.t-val{color:var(--tx);font-weight:600}.t-up{color:var(--g)}.t-dn{color:var(--r)}
+
+/* ══ FEATURES ══ */
+.section{padding:80px 32px;max-width:1100px;margin:0 auto;}
+.section-label{font-family:var(--mono);font-size:9px;color:var(--c);letter-spacing:3px;text-transform:uppercase;text-align:center;margin-bottom:12px;}
+.section-title{font-family:var(--head);font-size:clamp(24px,4vw,40px);font-weight:800;color:var(--tx);text-align:center;margin-bottom:8px;letter-spacing:-1px;}
+.section-sub{font-size:14px;color:var(--tx2);text-align:center;margin-bottom:48px;line-height:1.6;}
+
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.feat-card{background:var(--bg2);border:1px solid var(--b1);border-radius:10px;padding:24px;transition:all 0.2s;position:relative;overflow:hidden;}
+.feat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--c),transparent);opacity:0;transition:opacity 0.2s;}
+.feat-card:hover{border-color:var(--b3);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,0.3);}
+.feat-card:hover::before{opacity:1;}
+.feat-icon{font-size:28px;margin-bottom:14px;}
+.feat-title{font-family:var(--head);font-size:15px;font-weight:700;color:var(--tx);margin-bottom:8px;}
+.feat-desc{font-size:12px;color:var(--tx2);line-height:1.6;}
+.feat-tag{display:inline-block;font-family:var(--mono);font-size:8px;padding:2px 8px;border-radius:3px;margin-top:10px;background:rgba(0,229,255,0.1);color:var(--c);}
+
+/* ══ STATS ══ */
+.stats-row{display:flex;justify-content:center;gap:0;border:1px solid var(--b1);border-radius:10px;overflow:hidden;background:var(--bg2);margin:48px 0;}
+.stat{padding:28px 40px;text-align:center;border-right:1px solid var(--b1);flex:1;}
+.stat:last-child{border-right:none;}
+.stat-num{font-family:var(--head);font-size:36px;font-weight:900;color:var(--c);letter-spacing:-1px;}
+.stat-lbl{font-family:var(--mono);font-size:9px;color:var(--tx3);letter-spacing:1.5px;text-transform:uppercase;margin-top:4px;}
+
+/* ══ TABS PREVIEW ══ */
+.tabs-preview{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:24px 0 48px;}
+.tab-pill{background:var(--bg3);border:1px solid var(--b1);border-radius:20px;padding:5px 14px;font-family:var(--mono);font-size:9px;color:var(--tx3);letter-spacing:0.5px;cursor:default;}
+.tab-pill.active{background:rgba(0,229,255,0.08);border-color:var(--c);color:var(--c);}
+
+/* ══ HOW IT WORKS ══ */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.step{text-align:center;padding:24px;}
+.step-num{width:44px;height:44px;border-radius:50%;border:2px solid var(--c);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:16px;font-weight:700;color:var(--c);margin:0 auto 16px;}
+.step-title{font-family:var(--head);font-size:14px;font-weight:700;color:var(--tx);margin-bottom:8px;}
+.step-desc{font-size:12px;color:var(--tx2);line-height:1.6;}
+
+/* ══ CTA SECTION ══ */
+.cta-section{background:linear-gradient(135deg,rgba(0,229,255,0.06),rgba(108,99,255,0.06));border:1px solid var(--b1);border-radius:16px;padding:60px 40px;text-align:center;margin:40px 0;}
+.cta-title{font-family:var(--head);font-size:32px;font-weight:800;color:var(--tx);margin-bottom:12px;letter-spacing:-1px;}
+.cta-sub{font-size:14px;color:var(--tx2);margin-bottom:32px;line-height:1.6;}
+
+/* ══ FOOTER ══ */
+.footer{border-top:1px solid var(--b1);padding:32px;text-align:center;}
+.footer-brand{font-family:var(--head);font-size:20px;font-weight:800;color:var(--tx);margin-bottom:6px;}
+.footer-sub{font-family:var(--mono);font-size:9px;color:var(--tx3);letter-spacing:1.5px;}
+
+/* ══ EMAIL MODAL ══ */
+.email-modal{background:var(--bg2);border:1px solid var(--b2);border-radius:16px;padding:48px 40px;width:100%;max-width:460px;text-align:center;box-shadow:0 0 80px rgba(0,0,0,0.6),0 0 40px rgba(0,229,255,0.08);}
+.modal-gem{width:52px;height:52px;background:linear-gradient(135deg,var(--c),var(--p));clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);margin:0 auto 20px;box-shadow:0 0 30px rgba(0,229,255,0.5);}
+.modal-title{font-family:var(--head);font-size:24px;font-weight:800;color:var(--tx);margin-bottom:6px;}
+.modal-sub{font-size:13px;color:var(--tx2);margin-bottom:28px;line-height:1.6;}
+.email-input{width:100%;background:var(--bg4);border:1px solid var(--b2);border-radius:7px;padding:13px 16px;color:var(--tx);font-family:var(--mono);font-size:12px;outline:none;transition:border-color 0.18s,box-shadow 0.18s;margin-bottom:12px;}
+.email-input:focus{border-color:var(--c);box-shadow:0 0 0 3px rgba(0,229,255,0.1);}
+.email-input::placeholder{color:var(--tx3);}
+.modal-agree{font-size:11px;color:var(--tx3);margin-bottom:20px;line-height:1.5;}
+.modal-divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--tx3);font-family:var(--mono);font-size:9px;}
+.modal-divider::before,.modal-divider::after{content:'';flex:1;height:1px;background:var(--b1);}
+.pw-input{width:100%;background:var(--bg4);border:1px solid var(--b2);border-radius:7px;padding:11px 16px;color:var(--tx);font-family:var(--mono);font-size:13px;outline:none;text-align:center;letter-spacing:4px;transition:border-color 0.18s;margin-bottom:10px;}
+.pw-input:focus{border-color:var(--p);}
+.pw-input::placeholder{letter-spacing:1px;}
+.modal-err{height:18px;font-family:var(--mono);font-size:9px;color:var(--r);margin-bottom:8px;}
+.modal-note{font-family:var(--mono);font-size:9px;color:var(--tx3);margin-top:16px;line-height:1.6;}
+
+/* ══ PLATFORM FRAME ══ */
+#platformFrame{width:100%;height:100%;border:none;}
+
+/* ══ PLATFORM HEADER (minimal, over iframe) ══ */
+.platform-header{
+  position:fixed;top:0;left:0;right:0;height:40px;z-index:500;
+  background:rgba(5,8,12,0.98);border-bottom:1px solid var(--b1);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;
+}
+.ph-brand{display:flex;align-items:center;gap:8px;font-family:var(--head);font-size:14px;font-weight:800;color:var(--tx);}
+.ph-gem{width:18px;height:18px;background:linear-gradient(135deg,var(--c),var(--p));clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);}
+.ph-user{font-family:var(--mono);font-size:9px;color:var(--tx3);}
+.ph-logout{font-family:var(--mono);font-size:8px;color:var(--tx3);background:transparent;border:1px solid var(--b1);border-radius:3px;padding:3px 8px;cursor:pointer;letter-spacing:1px;text-transform:uppercase;}
+.ph-logout:hover{border-color:var(--c);color:var(--c);}
+
+/* ══ LOCKED OVERLAY (inside iframe concept) ══ */
+#lockedOverlay{
+  position:fixed;inset:0;z-index:450;
+  background:rgba(0,0,0,0.7);
+  backdrop-filter:blur(4px);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity 0.3s;
+}
+#lockedOverlay.show{opacity:1;pointer-events:all;}
+.lock-card{background:var(--bg2);border:1px solid var(--p);border-radius:14px;padding:40px;max-width:400px;width:100%;text-align:center;box-shadow:0 0 60px rgba(108,99,255,0.2);}
+.lock-icon{font-size:40px;margin-bottom:16px;}
+.lock-title{font-family:var(--head);font-size:20px;font-weight:800;color:var(--tx);margin-bottom:6px;}
+.lock-sub{font-size:12px;color:var(--tx2);margin-bottom:24px;line-height:1.6;}
+
+/* ══ ANIMATION ══ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp 0.6s ease forwards;}
+.delay-1{animation-delay:0.1s;opacity:0;}
+.delay-2{animation-delay:0.2s;opacity:0;}
+.delay-3{animation-delay:0.3s;opacity:0;}
+.delay-4{animation-delay:0.4s;opacity:0;}
+.delay-5{animation-delay:0.5s;opacity:0;}
+
+/* ══ RESPONSIVE ══ */
+@media(max-width:768px){
+  .features-grid{grid-template-columns:1fr;}
+  .steps{grid-template-columns:1fr;}
+  .stats-row{flex-direction:column;}
+  .stat{border-right:none;border-bottom:1px solid var(--b1);}
+  .stat:last-child{border-bottom:none;}
+  .hero-title{font-size:36px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════
+     SCREEN 1: LANDING PAGE
+══════════════════════════════════════════════════════ -->
+<div id="landingScreen">
+
+  <!-- Nav -->
+  <nav class="landing-nav">
+    <a class="nav-brand" href="#">
+      <div class="nav-gem"></div>
+      <div>
+        <div class="nav-name">Structura</div>
+        <div class="nav-tag">Structured Products</div>
+      </div>
+    </a>
+    <div class="nav-cta">
+      <div class="live-pill"><div class="live-dot"></div>Live Market Data</div>
+      <button class="btn btn-g" onclick="openEmailModal()">Sign In</button>
+      <button class="btn btn-c" onclick="openEmailModal()">Get Access →</button>
+    </div>
+  </nav>
+
+  <!-- Ticker -->
+  <div class="ticker-strip" style="margin-top:52px;">
+    <div class="ticker-inner" id="ticker1"></div>
+  </div>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-eyebrow fade-up">Structured Products Analytics</div>
+    <h1 class="hero-title fade-up delay-1">The Platform Wall Street<br><span>Analysts Actually Need</span></h1>
+    <p class="hero-sub fade-up delay-2">Live market data. Multi-tranche waterfall models. OC/IC trigger mechanics. Duration lab. Stress tests. And the most detailed RMBS deal education ever built — from raw mortgage pool to rated bond in investor hands.</p>
+    <div class="hero-cta fade-up delay-3">
+      <button class="btn btn-c btn-hero" onclick="openEmailModal()">Get Free Access →</button>
+      <button class="btn btn-g btn-hero" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">See What's Inside ↓</button>
+    </div>
+
+    <!-- Tab Pills Preview -->
+    <div class="tabs-preview fade-up delay-4">
+      ${['Dashboard','Cash Flow Engine','Waterfall Model','Risk & OAS','CUSIP Library','Live Markets','Yield Curve','Spread Monitor','Stress Tests','Bond Compare','Prepay Models','Duration Lab','Learn','Market Intel','Structure Academy'].map((t,i)=>`<div class="tab-pill ${i<3?'active':''}">${t}</div>`).join('')}
+    </div>
+
+    <div class="stats-row fade-up delay-5">
+      <div class="stat"><div class="stat-num">15</div><div class="stat-lbl">Analytics Modules</div></div>
+      <div class="stat"><div class="stat-num">250</div><div class="stat-lbl">Real Loans in Pool Model</div></div>
+      <div class="stat"><div class="stat-num">10</div><div class="stat-lbl">Deal Lifecycle Stages</div></div>
+      <div class="stat"><div class="stat-num">Live</div><div class="stat-lbl">FRED · NY Fed · PMMS</div></div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="section" id="features">
+    <div class="section-label">What's Inside</div>
+    <h2 class="section-title">Everything a Structured Credit<br>Professional Needs</h2>
+    <p class="section-sub">From pool-level analytics to deal-level structuring — built by someone who lived inside structured products at a major bank.</p>
+
+    <div class="features-grid">
+      <div class="feat-card">
+        <div class="feat-icon">📊</div>
+        <div class="feat-title">Live Market Dashboard</div>
+        <div class="feat-desc">Real-time Fed Funds, SOFR, full Treasury curve, 30Y mortgage rates, MBS current coupon, and agency/non-agency OAS spreads — pulled live from FRED and NY Fed APIs.</div>
+        <span class="feat-tag">LIVE DATA</span>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">⚡</div>
+        <div class="feat-title">Cash Flow Engine</div>
+        <div class="feat-desc">Full monthly amortization model: WAC, WAM, CPR, CDR, loss severity, servicer fee, discount rate. Price, WAL, Macaulay/Modified duration, convexity, IRR, DV01 — all computed in real time.</div>
+        <span class="feat-tag">ANALYTICS</span>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🏗️</div>
+        <div class="feat-title">Multi-Tranche Waterfall</div>
+        <div class="feat-desc">Full OC/IC trigger mechanics, Principal Deficiency Ledger, step-down logic, pro-rata/sequential/hybrid pay structures. Month-by-month cash flow trace showing exactly where every dollar goes.</div>
+        <span class="feat-tag">DEAL STRUCTURE</span>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🔬</div>
+        <div class="feat-title">Sensitivity & Stress Tests</div>
+        <div class="feat-desc">7×7 CPR/CDR sensitivity matrix. 7 scenarios from Base Case to GFC Replay. Price/yield matrix across ±200bp. Scenario comparison charts with color-coded heatmaps.</div>
+        <span class="feat-tag">RISK</span>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🗄️</div>
+        <div class="feat-title">CUSIP Library</div>
+        <div class="feat-desc">15+ public RMBS/ABS bonds tracked: Agency, Jumbo Prime, Non-QM, DSCR, CRT, SFR Rental. Search, filter, and load any bond directly into the cash flow model. Add your own CUSIPs.</div>
+        <span class="feat-tag">BOND DATA</span>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📐</div>
+        <div class="feat-title">Duration Laboratory</div>
+        <div class="feat-desc">Macaulay, Modified, Effective duration. DV01, PV01, convexity. Interactive price/yield curve. Side-by-side bond comparison across any three securities in the database.</div>
+        <span class="feat-tag">ANALYTICS</span>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📈</div>
+        <div class="feat-title">Prepayment Models</div>
+        <div class="feat-desc">PSA benchmark curves at 50/100/200%. CPR→SMM converter. Burnout effect visualization. Driver analysis: refinancing incentive, seasonality, housing turnover, loan seasoning.</div>
+        <span class="feat-tag">PREPAY</span>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📡</div>
+        <div class="feat-title">Spread Monitor</div>
+        <div class="feat-desc">Real-time OAS by rating (Agency AAA through Non-Agency B). Agency MBS vs UST. ARM vs SOFR spread history. Full spread table with 1W/1M/YTD changes across 11 sectors.</div>
+        <span class="feat-tag">MARKETS</span>
+      </div>
+      <div class="feat-card" style="border-color:rgba(108,99,255,0.4);background:rgba(108,99,255,0.04);">
+        <div class="feat-icon">🏛️</div>
+        <div class="feat-title">Structure Academy</div>
+        <div class="feat-desc">10 stages. 250 real loans. Interactive spreadsheets. Capital structure builder. Live OC/IC waterfall calculator. Rating agency stress test engine. From pool tape to closing dinner — every step, every person, every document.</div>
+        <span class="feat-tag" style="background:rgba(108,99,255,0.15);color:var(--p2);">EDUCATION</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <div style="background:var(--bg1);border-top:1px solid var(--b1);border-bottom:1px solid var(--b1);padding:60px 32px;">
+    <div style="max-width:800px;margin:0 auto;">
+      <div class="section-label">How It Works</div>
+      <h2 class="section-title" style="margin-bottom:40px;">Three Levels of Access</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-title">Enter Your Email</div>
+          <div class="step-desc">Free access. No credit card. Just your email so we know who's using the platform. You get instant access to the dashboard, live data, charts, and education modules.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-title">Explore the Platform</div>
+          <div class="step-desc">Browse all 15 modules. View live market data, read the glossary, explore the CUSIP library, and go through the Structure Academy at your own pace.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-title">Full Model Access</div>
+          <div class="step-desc">To run cash flow models, waterfall engines, and sensitivity analyses — enter the access code. Available to professionals, students, and interviewers upon request.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div style="padding:60px 32px;max-width:800px;margin:0 auto;">
+    <div class="cta-section">
+      <div class="cta-title">Ready to see structured finance<br>the way professionals do?</div>
+      <div class="cta-sub">Free access. Just your email. No card required.<br>Built by a structured products analyst — not a software company.</div>
+      <button class="btn btn-c btn-hero" onclick="openEmailModal()">Get Instant Access →</button>
+      <div style="margin-top:20px;font-family:var(--mono);font-size:9px;color:var(--tx3);letter-spacing:1px;">RMBS · ABS · CLO · CMBS · CRT · NON-QM · SFR · AGENCY</div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-brand">Structura</div>
+    <div class="footer-sub">STRUCTURED PRODUCTS ANALYTICS · © 2026</div>
+    <div style="margin-top:12px;font-size:11px;color:var(--tx3);">Built by a JPMorgan Structured Products analyst. All models, all data, all education.</div>
+  </footer>
+
+</div><!-- /landingScreen -->
+
+<!-- ══════════════════════════════════════════════════════
+     SCREEN 2: EMAIL / ACCESS MODAL
+══════════════════════════════════════════════════════ -->
+<div id="emailScreen">
+  <div class="email-modal">
+    <div class="modal-gem"></div>
+    <div class="modal-title">Get Access to Structura</div>
+    <div class="modal-sub">Enter your email for free access to live market data, the CUSIP library, and Structure Academy. Enter the access code to unlock all models.</div>
+
+    <!-- Email form (Formspree — replace YOUR_FORM_ID) -->
+    <form id="emailForm" onsubmit="handleEmailSubmit(event)">
+      <input class="email-input" type="email" id="emailInput" placeholder="your@email.com" required autocomplete="email">
+      <div class="modal-agree">By continuing you agree to receive updates about Structura. No spam — ever.</div>
+      <button type="submit" class="btn btn-c" style="width:100%;justify-content:center;padding:12px;" id="emailBtn">
+        Get Free Access →
+      </button>
+    </form>
+
+    <div id="emailSuccess" style="display:none;">
+      <div style="color:var(--g);font-family:var(--mono);font-size:11px;padding:12px;border:1px solid rgba(0,230,118,0.3);border-radius:6px;margin-bottom:16px;">
+        ✓ Access granted — welcome to Structura
+      </div>
+    </div>
+
+    <div class="modal-divider">OR ENTER ACCESS CODE FOR FULL MODEL ACCESS</div>
+
+    <input class="pw-input" type="password" id="pwInput" placeholder="Access code" onkeydown="if(event.key==='Enter')checkPW()">
+    <div class="modal-err" id="pwErr"></div>
+    <button class="btn" style="width:100%;justify-content:center;padding:11px;background:rgba(108,99,255,0.15);border:1px solid rgba(108,99,255,0.4);color:var(--p2);" onclick="checkPW()">
+      Unlock Full Access
+    </button>
+
+    <button onclick="closeEmailModal()" style="background:transparent;border:none;color:var(--tx3);font-family:var(--mono);font-size:9px;cursor:pointer;margin-top:16px;letter-spacing:1px;text-transform:uppercase;">← Back to Overview</button>
+
+    <div class="modal-note">
+      Free tier: Dashboard · Live Data · CUSIP Library · Structure Academy · Glossary<br>
+      Full access: Cash Flow Engine · Waterfall Model · Risk Analytics · Stress Tests
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SCREEN 3: PLATFORM (iframe or inline)
+══════════════════════════════════════════════════════ -->
+<div id="platformScreen">
+  <!-- Minimal top bar -->
+  <div class="platform-header">
+    <div class="ph-brand"><div class="ph-gem"></div>Structura</div>
+    <span class="ph-user" id="phUser"></span>
+    <button class="ph-logout" onclick="logout()">← Exit</button>
+  </div>
+
+  <!-- The actual platform loads here -->
+  <iframe id="platformFrame" src="platform.html" style="margin-top:40px;height:calc(100vh - 40px);width:100%;border:none;"></iframe>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════════════ -->
+<script>
+'use strict';
+
+// ── CONFIG ──────────────────────────────────────────
+const FULL_ACCESS_PW  = 'Ammfk@13';
+const FORMSPREE_ID    = 'YOUR_FORM_ID'; // ← Replace with your Formspree form ID (free at formspree.io)
+// Formspree setup: go to formspree.io → New Form → copy the form ID (e.g. xpwdabcd)
+// Emails will appear in your Formspree dashboard AND get forwarded to your email
+
+// ── STATE ───────────────────────────────────────────
+let userEmail    = localStorage.getItem('structura_email') || '';
+let hasFullAccess = localStorage.getItem('structura_full') === '1';
+
+// ── TICKER ──────────────────────────────────────────
+const tickerItems = [
+  {l:'FED FUNDS',v:'4.50%',c:0},{l:'SOFR',v:'4.33%',c:-0.01},
+  {l:'10Y UST',v:'4.39%',c:+0.03},{l:'2Y UST',v:'3.97%',c:-0.02},
+  {l:'30Y UST',v:'4.85%',c:+0.01},{l:'30Y MTG',v:'6.81%',c:-0.05},
+  {l:'MBS CC',v:'6.31%',c:0},{l:'2s10s',v:'+42bp',c:+2},
+  {l:'FNMA 6.0',v:'99-24',c:+3},{l:'FNMA 6.5',v:'100-18',c:+2},
+  {l:'GNMA 6.0',v:'100-04',c:+4},{l:'SOFR 30D',v:'4.31%',c:-0.01},
+  {l:'OAS Ag AAA',v:'32bp',c:-1},{l:'OAS NAg AAA',v:'82bp',c:+3},
+  {l:'OAS NAg BBB',v:'315bp',c:+8},{l:'JPMMT 2024-3 A1',v:'99.10',c:+0.15},
+];
+function buildTicker(){
+  const mkItem = it => {
+    const cls = it.c>0?'t-up':it.c<0?'t-dn':'';
+    const chg = it.c!==0?(it.c>0?'+':'')+it.c.toFixed(2):'';
+    return `<div class="t-item"><span class="t-lbl">${it.l}</span><span class="t-val">${it.v}</span>${chg?`<span class="${cls}">${chg}</span>`:''}</div>`;
+  };
+  const s = tickerItems.map(mkItem).join('');
+  const el = document.getElementById('ticker1');
+  if(el) el.innerHTML = s+s;
+}
+buildTicker();
+
+// ── MODAL OPEN/CLOSE ─────────────────────────────────
+function openEmailModal() {
+  // If already has email access, go straight to platform
+  if(userEmail) { showPlatform(); return; }
+  document.getElementById('emailScreen').classList.add('open');
+  setTimeout(()=>document.getElementById('emailInput')?.focus(), 200);
+}
+
+function closeEmailModal() {
+  document.getElementById('emailScreen').classList.remove('open');
+}
+
+// ── EMAIL SUBMIT ─────────────────────────────────────
+async function handleEmailSubmit(e) {
+  e.preventDefault();
+  const email = document.getElementById('emailInput').value.trim();
+  if(!email) return;
+
+  const btn = document.getElementById('emailBtn');
+  btn.textContent = 'Processing...';
+  btn.disabled = true;
+
+  // Save locally
+  userEmail = email;
+  localStorage.setItem('structura_email', email);
+
+  // Send to Formspree (collects in your dashboard + emails you)
+  try {
+    if(FORMSPREE_ID !== 'YOUR_FORM_ID') {
+      await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          email,
+          message: `New Structura visitor: ${email}`,
+          _subject: `Structura Access: ${email}`,
+          accessed_at: new Date().toISOString(),
+          user_agent: navigator.userAgent,
+        })
+      });
+    }
+  } catch(err) {
+    // Fail silently — don't block the user
+    console.log('Formspree not configured yet');
+  }
+
+  // Show success and open platform
+  document.getElementById('emailForm').style.display = 'none';
+  document.getElementById('emailSuccess').style.display = 'block';
+  setTimeout(() => showPlatform(), 1000);
+}
+
+// ── PASSWORD CHECK ───────────────────────────────────
+function checkPW() {
+  const pw = document.getElementById('pwInput').value;
+  if(pw === FULL_ACCESS_PW) {
+    hasFullAccess = true;
+    localStorage.setItem('structura_full', '1');
+    // If no email yet, set a placeholder
+    if(!userEmail) { userEmail = 'direct_access'; localStorage.setItem('structura_email', userEmail); }
+    showPlatform();
+  } else {
+    document.getElementById('pwErr').textContent = '✗ Incorrect access code';
+    document.getElementById('pwInput').value = '';
+    setTimeout(()=>document.getElementById('pwErr').textContent='', 2000);
+  }
+}
+
+// ── SHOW PLATFORM ────────────────────────────────────
+function showPlatform() {
+  document.getElementById('emailScreen').classList.remove('open');
+  document.getElementById('landingScreen').style.opacity = '0';
+  document.getElementById('landingScreen').style.pointerEvents = 'none';
+
+  const ps = document.getElementById('platformScreen');
+  ps.classList.add('open');
+
+  // Show user email in header
+  const ph = document.getElementById('phUser');
+  if(ph && userEmail && userEmail !== 'direct_access') {
+    ph.textContent = userEmail;
+  }
+
+  setTimeout(()=>{ document.getElementById('landingScreen').style.display='none'; }, 500);
+}
+
+// ── LOGOUT ───────────────────────────────────────────
+function logout() {
+  document.getElementById('landingScreen').style.display = '';
+  document.getElementById('landingScreen').style.opacity = '1';
+  document.getElementById('landingScreen').style.pointerEvents = 'all';
+  document.getElementById('platformScreen').classList.remove('open');
+  // Don't clear localStorage so returning users skip the email gate
+}
+
+// ── AUTO LOGIN for returning users ───────────────────
+window.addEventListener('load', () => {
+  if(userEmail) {
+    // Returning visitor — skip email gate, go straight to platform
+    showPlatform();
+  }
+});
+</script>
+</body>
+</html>
