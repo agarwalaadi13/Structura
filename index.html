@@ -1116,6 +1116,29 @@ tbody td:first-child { text-align: left; color: var(--text3); }
       <div style="padding:16px 20px 0;">
         <div class="section-title">Multi-Tranche Waterfall — Full OC/IC Trigger Engine</div>
 
+        <!-- CUSIP LOOKUP -->
+        <div class="card" style="margin-bottom:14px;border-color:var(--accent);">
+          <div class="card-header" style="background:rgba(0,229,255,0.04);">
+            <span class="card-title" style="color:var(--accent);">⬡ CUSIP / Deal Lookup — SEC EDGAR</span>
+            <span style="font-family:var(--mono);font-size:9px;color:var(--text3);">Live search via SEC EDGAR full-text API</span>
+          </div>
+          <div class="card-body">
+            <div style="display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:end;">
+              <div class="field">
+                <label>Enter CUSIP or Deal Name (e.g. "JPMMT 2024" or "FNMA 2024-21")</label>
+                <input type="text" id="cusipInput" placeholder="e.g. 3622M0AB6 or HOMEE 2024-1 or JPMMT 2023" style="font-size:12px;">
+              </div>
+              <button class="btn btn-primary" onclick="lookupCUSIP()">🔍 Search EDGAR</button>
+              <button class="btn btn-ghost" onclick="loadDemoStructure()">Load Demo Deal</button>
+            </div>
+            <div id="cusipResults" style="margin-top:12px;display:none;">
+              <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:8px;letter-spacing:1px;">EDGAR RESULTS</div>
+              <div id="cusipResultsBody"></div>
+            </div>
+            <div id="cusipDealInfo" style="margin-top:12px;display:none;"></div>
+          </div>
+        </div>
+
         <div class="two-col" style="margin-bottom:14px;">
           <div class="card">
             <div class="card-header">
@@ -1214,10 +1237,13 @@ tbody td:first-child { text-align: left; color: var(--text3); }
         <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:16px;">
           <div>
             <div class="section-title">Risk Analytics & OAS Modeling</div>
-            <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:3px;">Duration, Convexity, OAS decomposition, Scenario P&L and Spread analysis — driven by Cash Flow Engine inputs</div>
+            <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:3px;">Select any CUSIP to load its full risk profile — Duration, Convexity, OAS, Scenario P&L, Spread History</div>
           </div>
-          <div style="display:flex;gap:10px;align-items:center;">
-            <button onclick="updateAnalyticsFromCF()" style="font-family:var(--mono);font-size:10px;background:rgba(0,229,255,0.1);border:1px solid var(--accent);color:var(--accent);border-radius:5px;padding:7px 14px;cursor:pointer;">▶ Refresh Analytics</button>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+            <select id="analyticsCusipSelect" onchange="loadCusipAnalytics()" style="font-family:var(--mono);font-size:10px;background:var(--bg3);border:1px solid var(--accent);color:var(--text);border-radius:5px;padding:7px 12px;min-width:320px;cursor:pointer;">
+              <option value="">── Select a CUSIP to analyze ──</option>
+            </select>
+            <button onclick="loadCusipAnalytics()" style="font-family:var(--mono);font-size:10px;background:rgba(0,229,255,0.1);border:1px solid var(--accent);color:var(--accent);border-radius:5px;padding:7px 14px;cursor:pointer;">▶ Load Analytics</button>
           </div>
         </div>
 
@@ -2930,9 +2956,9 @@ function switchPanel(id) {
   if(id==='cusips')     setTimeout(buildCusipLibrary, 80);
   if(id==='livepricer') setTimeout(lpInit, 80);
   if(id==='wholeloan')  setTimeout(wlInit, 80);
-  // Sidebar: only show on Dashboard
+  // Sidebar: only show on Dashboard, Cash Flow, Waterfall, Analytics
   const sb = document.querySelector('.sidebar');
-  const showSidebar = ['dashboard'];
+  const showSidebar = ['dashboard','cashflow','waterfall','analytics'];
   if(sb) sb.classList.toggle('sidebar-visible', showSidebar.includes(id));
   // Fix main overflow for structure panel scrolling
   const mainEl = document.querySelector('main');
@@ -3981,13 +4007,10 @@ function exportWFCSV() {
 // CUSIP / SEC EDGAR LOOKUP
 // ══════════════════════════════════════════════════════════════════════
 async function lookupCUSIP() {
-  const inputEl = document.getElementById('cusipInput');
-  if (!inputEl) return;
-  const q = inputEl.value.trim();
+  const q = document.getElementById('cusipInput').value.trim();
   if(!q){ return; }
   const box = document.getElementById('cusipResults');
   const body = document.getElementById('cusipResultsBody');
-  if (!box || !body) return;
   box.style.display='block';
   body.innerHTML = '<div style="font-family:var(--mono);font-size:10px;color:var(--text3);padding:10px;"><span class="spinner"></span> Searching SEC EDGAR...</div>';
 
@@ -4052,15 +4075,13 @@ function renderEDGARFallback(q) {
 function loadBondIntoDeal(cusip) {
   const b = BOND_DB.find(x=>x.cusip===cusip);
   if(!b) return;
-  const wfPool = document.getElementById('wf_pool'); if(wfPool) wfPool.value = b.bal;
-  const cfWac  = document.getElementById('cf_wac');  if(cfWac)  cfWac.value  = (b.coupon + 0.50).toFixed(2);
-  const cfCpr  = document.getElementById('cf_cpr');  if(cfCpr)  cfCpr.value  = b.cpr;
-  const cfCdr  = document.getElementById('cf_cdr');  if(cfCdr)  cfCdr.value  = b.cdr;
-  const cfSev  = document.getElementById('cf_sev');  if(cfSev)  cfSev.value  = b.sev;
-  const dealEl = document.getElementById('cusipDealInfo');
-  if (dealEl) {
-    dealEl.style.display='block';
-    dealEl.innerHTML = `
+  document.getElementById('wf_pool').value = b.bal;
+  document.getElementById('cf_wac').value = (b.coupon + 0.50).toFixed(2);
+  document.getElementById('cf_cpr').value = b.cpr;
+  document.getElementById('cf_cdr').value = b.cdr;
+  document.getElementById('cf_sev').value = b.sev;
+  document.getElementById('cusipDealInfo').style.display='block';
+  document.getElementById('cusipDealInfo').innerHTML = `
     <div style="background:rgba(0,229,255,0.04);border:1px solid var(--accent);border-radius:6px;padding:14px 16px;">
       <div style="font-family:var(--mono);font-size:9px;color:var(--accent);letter-spacing:1px;margin-bottom:8px;">DEAL LOADED: ${b.deal}</div>
       <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;">
@@ -4070,13 +4091,11 @@ function loadBondIntoDeal(cusip) {
         Pool assumptions auto-populated from bond data. <span style="color:var(--amber);">Run waterfall to see full deal cash flow trace.</span>
       </div>
     </div>`;
-  }
   setStatus('Deal loaded: '+b.name+' | Pool assumptions populated');
 }
 
 function loadDemoStructure() {
-  const inputEl = document.getElementById('cusipInput');
-  if(inputEl) inputEl.value = 'HOMEE 2024-1';
+  document.getElementById('cusipInput').value = 'HOMEE 2024-1';
   loadBondIntoDeal('66781PAD2');
   runWaterfall();
 }
@@ -4119,23 +4138,6 @@ function updateAnalytics(price, macDur, modDur, conv, disc, wac, exSpd) {
 
 function gaugeRow(label,val,pct,color){
   return `<div class="gauge-row"><span class="gauge-label">${label}</span><div class="gauge-bar-bg"><div class="gauge-bar-fill" style="background:${color};width:${Math.min(100,pct)}%"></div></div><span class="gauge-val" style="color:${color}">${val}</span></div>`;
-}
-
-// Refresh analytics from whatever is currently in the CF engine
-function updateAnalyticsFromCF() {
-  const price   = document.getElementById('om_price')  ?.textContent || '100';
-  const macDur  = document.getElementById('om_dur')    ?.textContent || '5';
-  const modDur  = document.getElementById('om_moddur') ?.textContent || '4.8';
-  const conv    = document.getElementById('om_conv')   ?.textContent || '0';
-  const disc    = v('cf_disc') / 100;
-  const wac     = v('cf_wac')  / 100;
-  const exSpd   = document.getElementById('om_xs')     ?.textContent?.replace('%','') || '0';
-  if (!STATE.cfRows || !STATE.cfRows.length) {
-    runCashFlow();
-  } else {
-    updateAnalytics(price, macDur, modDur, conv, disc, wac, exSpd);
-    buildPrepayChart();
-  }
 }
 
 function buildPrepayChart() {
@@ -5880,6 +5882,7 @@ function loadCusipAnalytics() {
 
 function init() {
   buildBondList(BOND_DB);
+  populateAnalyticsCusips();
   buildTrancheConfig();
   loadMarketData();
   
